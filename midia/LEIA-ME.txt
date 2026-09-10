@@ -1,0 +1,87 @@
+MIDIA DO SITE: JS Fisioterapia
+==============================
+
+Esta pasta guarda as imagens apontadas pelos slots de src/lib/media.ts. Enquanto
+ela estiver so com este arquivo, e porque nenhum slot foi trocado ainda: os tres
+slots cadastrados sao abstratos e o desenho deles nasce em SVG dentro de
+src/components/Midia.astro, sem arquivo nenhum.
+
+O tipo CaminhoDeMidia obriga todo caminho a comecar em /midia/, mas ele confere
+o TEXTO do caminho, nao a existencia do arquivo. Um slot apontado para um nome
+que nao existe aqui compila sem erro e vai ao ar com imagem quebrada. Conferir a
+olho depois de cada troca.
+
+NOME DE ARQUIVO
+  O nome repete o id do slot, que nomeia o LUGAR na pagina e nunca a condicao de
+  quem aparece na imagem:
+
+      inicio-heroi.avif        sim
+      sobre-responsavel.avif   sim
+      joelho-pos-cirurgico.avif   NAO
+
+  Caminho de imagem entra em log de servidor, em historico de navegador e em
+  link compartilhado. Log de servidor nao pode contar a historia clinica de
+  ninguem. E a regra 1 do cabecalho de src/lib/media.ts, e ela vale aqui na
+  pasta, na hora de salvar o arquivo.
+
+FORMATO
+  AVIF como formato principal. Perde pouco em qualidade e pesa bem menos que
+  JPEG na mesma leitura, e todos os navegadores que este site atende leem AVIF.
+  WebP so se algum dia aparecer navegador de destino sem AVIF.
+  Sem PNG para fotografia: PNG e para desenho de linha e captura de tela.
+  Sem metadados: remover EXIF antes de publicar. A foto tirada no celular da
+  clinica carrega coordenada de GPS, modelo de aparelho e data e hora, e nada
+  disso precisa viajar junto com a imagem.
+
+LARGURAS A EXPORTAR
+  A escada tem quatro degraus:
+
+      480    celular em 1x
+      768    celular em 2x e tablet em retrato
+      1200   tablet em paisagem e desktop comum
+      1800   desktop grande e tela de alta densidade
+
+  A escada esta declarada em LARGURAS_DE_EXPORTACAO, em src/lib/media.ts, e o
+  componente so gera os degraus MENORES que a largura do arquivo base. Uma foto
+  base de 1800 px sai em 480, 768, 1200 e 1800; uma de 1000 px sai em 480, 768 e
+  1000. Nao amplie: degrau maior que o original nao acrescenta detalhe, so peso.
+
+NOME DAS VARIANTES
+  A largura entra no fim do nome, antes da extensao. O arquivo base fica sem
+  sufixo e e o `src` de reserva do navegador antigo:
+
+      inicio-heroi.avif        arquivo base, na largura que o slot declara
+      inicio-heroi-480.avif
+      inicio-heroi-768.avif
+      inicio-heroi-1200.avif
+
+  Sao tres arquivos alem do base, e nao quatro: o degrau do tamanho do proprio
+  base e servido pelo arquivo base, sem sufixo. Uma foto base de 1800 px nao
+  tem inicio-heroi-1800.avif; o srcset aponta 1800w para inicio-heroi.avif.
+
+  A convencao e montada por conjuntoDeFontes(), em src/lib/media.ts, e nao por
+  varredura de pasta: o build nao le o disco. Um nome fora do padrao vira um
+  degrau quebrado no `srcset`, e o navegador some com a imagem sem avisar.
+
+COMO REGISTRAR A IMAGEM NO SITE
+  Uma linha em src/lib/media.ts, dentro do slot, trocando a fabrica de origem:
+
+      ...abstrato('malha-de-carga'),
+      ...foto('/midia/inicio-heroi.avif', 1800, 1200),
+
+  Os dois numeros sao a largura e a altura em pixels DO ARQUIVO BASE. Viram
+  width e height no HTML, que e o que segura o layout no lugar enquanto a imagem
+  baixa. Errar esses numeros nao quebra o build: entorta a pagina.
+
+  Imagem gerada por inteligencia artificial usa geradaPorIa() no lugar de
+  foto(), com os mesmos tres argumentos. As duas fabricas fazem a mesma coisa na
+  tela; a diferenca existe para a politica editorial poder responder, por
+  varredura do arquivo, quais imagens do site sao sinteticas.
+
+O QUE NAO ENTRA NESTA PASTA
+  Imagem de banco de imagens com rosto de modelo posando de paciente.
+  Imagem hospedada fora do dominio: a politica de privacidade promete nao
+  entregar o IP do visitante a terceiro, e imagem remota faz exatamente isso.
+  Foto de paciente sem autorizacao escrita, em nenhuma hipotese.
+
+Slots e regras: src/lib/media.ts. Tratamento visual: src/components/Midia.astro.

@@ -1,0 +1,55 @@
+FONTES AUTO-HOSPEDADAS: JS Fisioterapia
+=======================================
+
+Estes arquivos sao servidos pelo proprio dominio do site. Nunca troque por CDN:
+a politica de privacidade promete nao entregar o IP do visitante a terceiro, e
+um link para fonts.googleapis.com quebraria essa promessa em toda visita.
+
+Inter (corpo)
+  Autor: Rasmus Andersson
+  Licenca: SIL Open Font License 1.1
+  https://github.com/rsms/inter
+  inter-latin.woff2      subconjunto latin, eixo wght 100 a 900
+  inter-latin-ext.woff2  subconjunto latin estendido, eixo wght 100 a 900
+
+Archivo (display)
+  Autor: Omnibus-Type
+  Licenca: SIL Open Font License 1.1
+  https://github.com/Omnibus-Type/Archivo
+  archivo-latin.woff2      subconjunto latin, eixo wght 100 a 900
+  archivo-latin-ext.woff2  subconjunto latin estendido, eixo wght 100 a 900
+
+EIXO DO ARQUIVO x RECORTE DA DECLARACAO
+  A tabela fvar dos quatro arquivos declara wght de 100 a 900, que e o eixo
+  completo das duas familias. A declaracao @font-face em src/styles/tokens.css
+  anuncia um intervalo menor de proposito: 400 a 700 para Inter e 500 a 800
+  para Archivo. E recorte deliberado, nao erro. O intervalo anunciado e o que o
+  sistema visual usa (--js-peso-normal ate --js-peso-display), e anunciar so ele
+  evita que uma pagina peca font-weight 100 ou 900, pesos que nunca foram
+  conferidos em contraste nem em leitura de texto clinico. O arquivo continua
+  capaz de render-los; o sistema e que nao pede.
+
+ORIGEM E PREPARO DOS ARQUIVOS
+  Archivo saiu da familia variavel de duas dimensoes (wdth, wght) publicada em
+  google/fonts/ofl/archivo. Nela o eixo wdth vai de 62 a 125 e o eixo wght
+  chega com default 600 e nameID 1 igual a Archivo SemiBold, que e como a
+  familia e distribuida na origem. No preparo daqui o wdth foi fixado em 100
+  (largura normal, unica que o site usa), o default do wght foi recentrado em
+  400 e o nameID 1 voltou a ser Archivo, para o arquivo se identificar como a
+  familia limpa e nao como uma instancia nomeada.
+  Inter veio do subconjunto ja em uso, sem alteracao de contorno.
+  Nos quatro arquivos o nameID 13 (descricao da licenca) e o nameID 14 (URL da
+  licenca) foram gravados, para a licenca viajar dentro do binario tambem.
+
+  Peso no caminho critico (inter-latin + archivo-latin): cerca de 93 KB.
+  Os subconjuntos latin-ext so sao baixados se a pagina trouxer um caractere
+  fora do latin basico, por conta do unicode-range.
+
+LICENCA
+  As duas familias estao sob SIL Open Font License 1.1. A licenca permite uso
+  comercial, hospedagem propria, embutimento e modificacao, e a clausula 2 exige
+  que o aviso de copyright e o texto integral da licenca acompanhem os arquivos.
+  O texto integral, com os dois avisos de copyright, esta no arquivo OFL.txt
+  desta mesma pasta. Ele nao pode ser removido da pasta nem do deploy.
+
+Declaracao @font-face: src/styles/tokens.css, secao 1.

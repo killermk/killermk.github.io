@@ -1,0 +1,7 @@
+# JS Fisioterapia
+# Site em pre-lancamento: nenhuma pagina deve ser rastreada ainda.
+# Este arquivo e a meta noindex das paginas saem da mesma constante,
+# PRE_LANCAMENTO em src/lib/lancamento.ts. Virar la vira aqui.
+
+User-agent: *
+Disallow: /

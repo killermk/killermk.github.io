@@ -1,0 +1,10 @@
+Bibliotecas auto-hospedadas. Nenhuma vem de CDN, por coerencia com a politica
+de privacidade do site, que promete nao enviar o IP do visitante a terceiros.
+
+three.min.js        cena 3D
+gsap.min.js         animacao
+ScrollTrigger.min.js  animacao dirigida pelo scroll
+lenis.min.js        rolagem suavizada
+
+Carregadas sob demanda, so quando a cena vai existir. Nunca no caminho da
+primeira pintura.

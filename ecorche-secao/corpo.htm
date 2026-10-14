@@ -1238,6 +1238,8 @@ async function juntarEmLotes() {
   aplicarVisibilidade();
   window.__lotes = { desenhos: feitos.length, pecas: feitos.reduce((s, l) => s + l.userData.pecas, 0), ms: Math.round(performance.now() - t0) };
 }
+// uma volta pela fila de tarefas: o que o navegador tiver para a página (rolagem, quadro) entra antes de seguir
+function cederOFio() { return new Promise((r) => setTimeout(r, 0)); }
 async function iniciarSecao() {
   const corpo = new THREE.Box3().setFromObject(grupos[est.forma]);
   if (AZUL) await juntarEmLotes();
@@ -1281,6 +1283,8 @@ async function iniciarSecao() {
     const r = SECAO.regioes[i];
     SELECAO.length = 0; SELECAO.push(...acesasDe(r));
     aplicarMateriais(); aplicarVisibilidade();
+    // montar sem tarefa longa (site, 14/10): cede o fio à página entre a preparação e a compilação, e depois do desenho
+    await cederOFio();
     const v = secao.chaves[i + 1]; camera.position.copy(v.alvo.clone().add(v.dir.clone().multiplyScalar(v.dist))); camera.lookAt(v.alvo);
     // compilar sem travar a página (site, 14/10): os programas da região são pedidos antes do desenho, com o alvo do
     // compositor (o programa depende dele); com a compilação paralela da placa, o fio da página, que é o mesmo do site,
@@ -1290,6 +1294,7 @@ async function iniciarSecao() {
       await prontos;
     } else await compilarAosPoucos();
     compositor.render();
+    await cederOFio();
   }
   SELECAO.length = 0; aplicarMateriais(); aplicarVisibilidade(); secao.ativa = -1;
   if (parent !== window) parent.postMessage({ tipo: 'pronto' }, '*');

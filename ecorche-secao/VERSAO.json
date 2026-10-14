@@ -23,7 +23,8 @@
   "chegada no ponto e aviso no-ponto",
   "compilar sem travar a página (aquecimento assíncrono com compileAsync)",
   "um desenho por material (as peças num lote por material, BatchedMesh)",
-  "o quadro sem trabalho repetido (realce numa passada, fantasma com verso e frente num desenho, sem rótulos no modo seção, matrizes paradas)"
+  "o quadro sem trabalho repetido (realce numa passada, fantasma com verso e frente num desenho, sem rótulos no modo seção, matrizes paradas)",
+  "montar sem tarefa longa (o aquecimento cede o fio à página entre a preparação, a compilação e o desenho de cada região)"
  ],
  "posteres": [
   {
@@ -71,8 +72,8 @@
  ],
  "arquivos": {
   "corpo.htm": {
-   "sha256": "45804cc2ee1cd5c71cb559ff537fd2b2e17a947db12b36afc4fed83b99b2b915",
-   "bytes": 125494,
+   "sha256": "45a2dd653fcf156d920d4c76c1f09b2ba44aa9a7eece46229dd9751ea020b142",
+   "bytes": 125851,
    "origem": {
     "arquivo": "piloto/replica-servicos/secao/ecorche-secao/index.html",
     "sha256": "d1165454a41a48be0118b2c88bdd7dddc98c0627d2b8bf1500bd423fac4bc1bb"

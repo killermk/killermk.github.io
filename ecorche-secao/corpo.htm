@@ -1,0 +1,1576 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Corpo da seção Onde dói</title><style>body{margin:0}[hidden]{display:none!important}</style></head><body><title>Corpo da seção Onde dói</title>
+<script type="importmap">{"imports":{"three":"./three/three.module.min.js","three/addons/":"./three/addons/"}}</script>
+<style>
+/* Bancada de avaliação: a página não rola. O joelho fica parado e o painel (controles e avaliação) rola sozinho,
+   com o mouse ou com o dedo. Deitado: joelho à esquerda, painel à direita. Em pé: joelho em cima, painel embaixo.
+   Tema claro fixo de propósito (regra 9 da casa). */
+:root {
+  --chao: #EEF2F7;
+  --papel: #FFFFFF;
+  --tinta: #0E1A3D;
+  --suave: #465069;
+  --linha: #D3DCE8;
+  --marinho: #082759;
+  --azul: #1A5FC4;
+  --ok: #17663F;
+  --ok-fundo: #E3F2EA;
+  --palco-topo: #D8E3EF;
+  --palco-base: #C3D1E2;
+  --texto: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --escala: 1;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { font-size: calc(17px * var(--escala)); }
+html, body { height: 100%; }
+body { margin: 0; background: var(--chao); color: var(--tinta); font-family: var(--texto); line-height: 1.5;
+  display: flex; flex-direction: column; overflow: hidden; }
+.barra { flex: none; position: relative; z-index: 5; background: var(--papel); border-bottom: 1px solid var(--linha); }
+.barra .dentro { max-width: 1600px; margin: 0 auto; padding-inline: 16px; padding-block: 8px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: space-between; }
+.grupo { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.grupo > span { color: var(--suave); font-size: .9rem; }
+button { font: inherit; cursor: pointer; }
+.chip { min-height: 44px; padding: 0 14px; border-radius: 999px; border: 2px solid var(--marinho); background: var(--papel); color: var(--marinho); font-weight: 700; }
+.chip[aria-pressed="true"] { background: var(--marinho); color: var(--papel); }
+.chip:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+#salvo { font-size: .88rem; color: var(--suave); }
+.pagina { flex: 1; min-height: 0; width: 100%; max-width: 1600px; margin: 0 auto; padding-inline: 16px; padding-block: 12px;
+  display: flex; flex-direction: column; }
+h1 { font-size: 1.3rem; line-height: 1.25; margin: 0 0 .3rem; text-wrap: balance; }
+h2 { font-size: 1.25rem; margin: 0 0 .5rem; }
+h3 { font-size: 1rem; margin: 0 0 .4rem; }
+p { margin: .3rem 0; max-width: 70ch; }
+.bancada { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) clamp(300px, 30vw, 430px); gap: 14px; }
+/* em pé (celular e tablet em retrato): joelho em cima, parado; painel embaixo, rolando */
+@media (max-aspect-ratio: 1/1) and (max-width: 1000px) {
+  .bancada { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(200px, 42vh) minmax(0, 1fr); gap: 10px; }
+  @supports (height: 1dvh) { .bancada { grid-template-rows: minmax(200px, 42dvh) minmax(0, 1fr); } }
+}
+.palco { position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; border: 1px solid var(--linha); background: radial-gradient(120% 90% at 50% 35%, #f4f7fb 0%, #dfe7f0 70%, #d3dde9 100%); }
+.palco .vistas { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+.palco.comparar .vistas { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+#tela { display: block; width: 100%; height: 100%; min-height: 0; touch-action: none; }
+.tela-caixa { position: relative; min-width: 0; min-height: 0; }
+.chamadas, .rotulos { position: absolute; inset: 0; pointer-events: none; }
+.chamadas { width: 100%; height: 100%; overflow: visible; }
+.chamadas line { stroke: rgba(14, 26, 61, .55); stroke-width: 1.2; }
+.chamadas circle { fill: #FFFFFF; stroke: rgba(14, 26, 61, .65); stroke-width: 1.2; }
+.chamadas circle.sel { fill: #1E6FD9; stroke: #FFFFFF; }
+.rotulo { position: absolute; left: 0; top: 0; background: rgba(255, 255, 255, .95); color: var(--tinta); border-radius: 8px;
+  padding: 3px 10px; font-size: .8rem; font-weight: 700; white-space: nowrap; box-shadow: 0 1px 3px rgba(14, 26, 61, .2); }
+.rotulo.sel { outline: 2px solid #1E6FD9; }
+#conceito { display: none; width: 100%; height: 100%; min-height: 0; object-fit: cover; object-position: 50% 40%; }
+.palco.comparar #conceito { display: block; }
+.selo { position: absolute; left: 10px; top: 10px; background: rgba(255,255,255,.9); border-radius: 8px; padding: 4px 10px; font-size: .85rem; color: var(--tinta); }
+.palco.comparar .selo-img { display: block; }
+.selo-img { display: none; left: auto; right: 10px; }
+#carregando { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--marinho); }
+#caiu { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;
+  text-align: center; padding: 16px; background: rgba(238, 242, 247, .94); color: var(--tinta); font-weight: 700; }
+.controles { background: var(--papel); border: 1px solid var(--linha); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 14px;
+  min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.controles > * { flex: none; }
+.cabeca p { margin: 0; }
+.aval-painel { border-top: 1px solid var(--linha); padding-top: 14px; }
+.restaurar-barra { position: sticky; top: -14px; z-index: 2; background: var(--papel); margin-block: -6px; padding-block: 8px;
+  border-bottom: 1px solid var(--linha); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.linha-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.linha-chips .chip { min-height: 40px; padding: 0 12px; font-size: .92rem; }
+.variante { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
+.variante .chip { border-radius: 10px; text-align: left; padding: 8px 12px; min-height: 44px; }
+label.deslizar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; font-size: .9rem; }
+label.deslizar input { grid-column: 1 / -1; width: 100%; accent-color: var(--marinho); }
+.valor { color: var(--suave); font-variant-numeric: tabular-nums; }
+.nota { font-size: .86rem; color: var(--suave); }
+.avaliacao { margin-top: 8px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.item { background: var(--chao); border: 1px solid var(--linha); border-radius: 14px; padding: 14px; min-width: 0; }
+.item .linha-chips { margin: 6px 0; }
+.item .chip[aria-pressed="true"].bom { background: var(--ok); border-color: var(--ok); }
+textarea { width: 100%; font: inherit; padding: 8px 10px; border: 2px solid var(--linha); border-radius: 10px; color: var(--tinta); background: var(--papel); resize: vertical; }
+.fim { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+#fimtxt { color: var(--ok); font-weight: 700; }
+@media (max-width: 600px) {
+  .barra .dentro { gap: 4px 10px; padding-block: 6px; }
+  .grupo > span { display: none; }
+  #salvo { flex-basis: 100%; font-size: .8rem; line-height: 1.3; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<header class="barra">
+<div class="dentro">
+<div class="grupo" role="group" aria-label="Quem está avaliando">
+<span>Quem avalia:</span>
+<button type="button" class="chip pessoa" id="p-guilherme" data-pessoa="guilherme" aria-pressed="false">Guilherme</button>
+<button type="button" class="chip pessoa" id="p-ana" data-pessoa="ana" aria-pressed="false">Ana</button>
+</div>
+<div class="grupo" role="group" aria-label="Tamanho da letra">
+<span>Letra:</span>
+<button type="button" class="chip" id="menor" aria-label="Diminuir a letra">A−</button>
+<button type="button" class="chip" id="maior" aria-label="Aumentar a letra">A+</button>
+</div>
+<span id="salvo" aria-live="polite">Escolha quem está avaliando.</span>
+</div>
+</header>
+
+<main class="pagina">
+<div class="bancada">
+<div class="palco" id="palco">
+<div class="vistas">
+<div class="tela-caixa">
+<canvas id="tela" aria-label="Joelho direito em 3D"></canvas>
+<svg class="chamadas" id="chamadas" aria-hidden="true"></svg>
+<div class="rotulos" id="rotulos" aria-hidden="true"></div>
+</div>
+<img id="conceito" alt="A sua imagem de conceito, para comparar">
+</div>
+<span class="selo" id="selo">Novo</span>
+<span class="selo selo-img">Sua imagem</span>
+<div id="carregando">Carregando…</div>
+<div id="caiu" hidden><span>A placa de vídeo interrompeu o desenho 3D.</span><button type="button" class="chip" id="recarregar">Recarregar</button></div>
+</div>
+
+<aside class="controles" id="painel" aria-label="Controles e avaliação">
+<div class="cabeca">
+<h1 id="titulo"></h1>
+<p class="nota" id="intro"></p>
+</div>
+<div class="restaurar-barra">
+<button type="button" class="chip" id="restaurar">Restaurar o padrão</button>
+<span id="restaurado" class="nota" aria-live="polite"></span>
+</div>
+<div>
+<h3>Comparar</h3>
+<div class="linha-chips">
+<button type="button" class="chip" id="b-comparar" aria-pressed="false">Ver ao lado da sua imagem</button>
+</div>
+</div>
+<div>
+<h3>Forma</h3>
+<div class="linha-chips" role="group" aria-label="Forma" id="formas"></div>
+</div>
+<div>
+<h3>Material</h3>
+<div class="linha-chips" role="group" aria-label="Material">
+<button type="button" class="chip" id="m-hoje" aria-pressed="false">Hoje</button>
+<button type="button" class="chip" id="m-novo" aria-pressed="true">Novo</button>
+</div>
+</div>
+<div>
+<h3>Camadas</h3>
+<div class="linha-chips" role="group" aria-label="Camadas">
+<button type="button" class="chip camada" data-camada="musculo" aria-pressed="true">Músculos</button>
+<button type="button" class="chip camada" data-camada="tendao" aria-pressed="true">Tendões</button>
+<button type="button" class="chip camada" data-camada="ligamento" aria-pressed="true">Ligamentos</button>
+<button type="button" class="chip camada" data-camada="cartilagem" aria-pressed="true" id="c-cartilagem">Meniscos</button>
+<button type="button" class="chip camada" data-camada="osso" aria-pressed="true">Ossos</button>
+<button type="button" class="chip camada" data-camada="patela" aria-pressed="false">Patela</button>
+</div>
+</div>
+<div>
+<h3>Vista</h3>
+<div class="linha-chips" role="group" aria-label="Vista" id="vistas"></div>
+</div>
+<div>
+<h3>Acabamento</h3>
+<div class="linha-chips" role="group" aria-label="Acabamento">
+<button type="button" class="chip" id="b-ao" aria-pressed="true">Sombra de contato</button>
+<button type="button" class="chip" id="b-estudio" aria-pressed="false">Luz de estúdio</button>
+</div>
+<div class="linha-chips" role="group" aria-label="Contraste">
+<button type="button" class="chip contraste" data-c="suave" aria-pressed="true">Contraste suave</button>
+<button type="button" class="chip contraste" data-c="forte" aria-pressed="false">Contraste forte</button>
+</div>
+<div class="linha-chips"><button type="button" class="chip" id="b-opaco" aria-pressed="false">Músculo sem transparência</button></div>
+<label class="deslizar" for="r-vidro">Vidro do músculo <span class="valor" id="v-vidro"></span><input type="range" id="r-vidro" min="0" max="1" step="0.05" value="1"></label>
+<label class="deslizar" for="r-umido">Umidade do músculo <span class="valor" id="v-umido"></span><input type="range" id="r-umido" min="0" max="1" step="0.05" value="0.3"></label>
+</div>
+<div>
+<h3>Osso: combinação</h3>
+<div class="variante" role="group" aria-label="Combinação do osso">
+<button type="button" class="chip var-osso" data-v="1" aria-pressed="false">1. Marfim 001A + mancha da esponja nas pontas</button>
+<button type="button" class="chip var-osso" data-v="2" aria-pressed="false">2. Marfim 002A + mancha da esponja nas pontas</button>
+<button type="button" class="chip var-osso" data-v="3" aria-pressed="false">3. Marfim 002A + poros por código</button>
+<button type="button" class="chip var-osso" data-v="4" aria-pressed="false">4. Marfim 001A + poros por código</button>
+<button type="button" class="chip var-osso" data-v="5" aria-pressed="true">5. Marfim 002A + mancha da esponja + poros por código</button>
+</div>
+</div>
+<div>
+<h3>Osso: poros e manchas</h3>
+<label class="deslizar" for="r-forca">Força <span class="valor" id="v-forca"></span><input type="range" id="r-forca" min="0" max="1" step="0.05" value="1"></label>
+<label class="deslizar" for="r-tamanho">Tamanho <span class="valor" id="v-tamanho"></span><input type="range" id="r-tamanho" min="0.5" max="2.5" step="0.05" value="0.7"></label>
+<label class="deslizar" for="r-faixa">Até onde vão a partir da articulação <span class="valor" id="v-faixa"></span><input type="range" id="r-faixa" min="1" max="12" step="0.5" value="6"></label>
+<label class="deslizar" for="r-transicao">Transição para o liso <span class="valor" id="v-transicao"></span><input type="range" id="r-transicao" min="0.5" max="6" step="0.5" value="3"></label>
+<label class="deslizar" for="r-fora">Poros fora das pontas <span class="valor" id="v-fora"></span><input type="range" id="r-fora" min="0" max="1" step="0.05" value="0.5"></label>
+</div>
+<div>
+<h3>Seleção</h3>
+<div class="linha-chips">
+<button type="button" class="chip" id="b-selecao" aria-pressed="true"></button>
+<button type="button" class="chip" id="b-rotulos" aria-pressed="true">Rótulos das estruturas</button>
+</div>
+</div>
+<div id="notas"></div>
+<p class="nota" id="creditos"></p>
+<section class="aval-painel" aria-labelledby="t-aval">
+<h2 id="t-aval">A sua avaliação</h2>
+<p class="nota">Marque e escreva o que quiser; salva sozinho.</p>
+<div class="avaliacao" id="avaliacao"></div>
+<div class="fim">
+<button type="button" class="chip" id="concluir">Concluí a minha parte</button>
+<span id="fimtxt" aria-live="polite"></span>
+</div>
+</section>
+</aside>
+</div>
+</main>
+
+<script type="application/json" id="config">{"regiao": "corpo", "titulo": "Corpo da seção Onde dói, o palco da página de Serviços", "palavra": "o corpo", "formas": [{"id": "melhor", "rotulo": "Melhor de cada", "nome": "melhor de cada", "arquivo": ["corpo-tronco.mo.glb", "corpo-cabeca.mo.glb", "corpo-perna-d.mo.glb", "corpo-perna-e.mo.glb", "corpo-braco-d.mo.glb", "corpo-braco-e.mo.glb", "corpo-pele.mo.glb"], "arquivoLeve": ["corpo-tronco.leve.mo.glb", "corpo-cabeca.mo.glb", "corpo-perna-d.leve.mo.glb", "corpo-perna-e.leve.mo.glb", "corpo-braco-d.leve.mo.glb", "corpo-braco-e.leve.mo.glb", "corpo-pele.mo.glb"]}], "formaPadrao": "melhor", "centro": null, "pontas": "eixo", "vistaInicial": "corpo", "padrao": {"contraste": "forte", "musculoOpaco": true, "estudio": true, "umido": 0.3, "poros": {"forca": 1, "tamanho": 0.7, "faixa": 6, "transicao": 6, "fora": 0.5}}, "vistas": [{"id": "corpo", "rotulo": "Corpo inteiro", "dir": [-0.45, 0.05, 1], "dist": 3.7}, {"id": "frente", "rotulo": "Frente", "dir": [0, 0.03, 1], "dist": 3.7}, {"id": "costas", "rotulo": "Costas", "dir": [0, 0.03, -1], "dist": 3.7}, {"id": "fora", "rotulo": "Lado", "dir": [-1, 0.03, 0.05], "dist": 3.7}, {"id": "cabeca", "rotulo": "Cabeça", "alvo": "mandible", "dir": [-0.6, 0.15, 1], "dist": 0.75}, {"id": "ombro", "rotulo": "Ombro", "alvo": "cartilagem_humerus_head_d", "dir": [-0.8, 0.25, 0.7], "dist": 0.4}, {"id": "coluna", "rotulo": "Coluna lombar", "alvo": "intervertebral_disc_l4_l5", "dir": [-0.6, 0.05, -1], "dist": 0.45}, {"id": "joelho", "rotulo": "Joelho", "alvo": "anterior_cruciate_ligament_d", "dir": [-0.42, -0.08, 1], "dist": 0.3, "desloc": [0, 0.004, 0]}, {"id": "tornozelo", "rotulo": "Tornozelo e pé", "alvo": "talus_d", "dir": [-0.9, 0.3, 0.7], "dist": 0.36}], "rotulos": [{"id": "anterior_cruciate_ligament_d", "texto": "Ligamento cruzado anterior", "sel": true, "vistas": ["joelho"]}, {"id": "superficial_part_of_masseter_d", "texto": "Masseter", "vistas": ["cabeca"]}, {"id": "temporalis_muscle_d", "texto": "Músculo temporal", "vistas": ["cabeca"]}, {"id": "body_of_sternum", "texto": "Esterno", "vistas": ["frente"]}, {"id": "rectus_abdominis_muscle_d", "texto": "Reto do abdome", "vistas": ["corpo", "frente"]}, {"id": "pectoralis_major_muscle_d", "texto": "Peitoral maior", "vistas": ["corpo", "frente"]}, {"id": "latissimus_dorsi_muscle_d", "texto": "Latíssimo do dorso", "vistas": ["costas"]}, {"id": "gluteus_maximus_muscle_d", "texto": "Glúteo máximo", "vistas": ["costas"]}, {"id": "cartilagem_humerus_head_d", "texto": "Cabeça do úmero", "vistas": ["ombro"]}, {"id": "supraspinatus_muscle_d", "texto": "Supraespinal", "vistas": ["ombro"]}, {"id": "intervertebral_disc_l4_l5", "texto": "Disco L4-L5", "vistas": ["coluna"]}, {"id": "medial_meniscus_d", "texto": "Menisco medial", "vistas": ["joelho"]}, {"id": "patella_d", "texto": "Patela", "vistas": ["corpo", "frente"]}, {"id": "calcaneal_tendon_d", "texto": "Tendão do calcâneo", "vistas": ["tornozelo", "costas"]}, {"id": "anterior_talofibular_ligament_d", "texto": "Talofibular anterior", "vistas": ["tornozelo"]}], "selecao": [], "rotuloSelecao": "Ligamento cruzado anterior em azul", "patela": ["patella_d", "patellar_ligament_d", "cartilagem_patella_d", "lateral_patellar_retinaculum_d", "medial_patellar_retinaculum_d", "quadriceps_tendon_over_patella_d", "patella_e", "patellar_ligament_e", "cartilagem_patella_e", "lateral_patellar_retinaculum_e", "medial_patellar_retinaculum_e", "quadriceps_tendon_over_patella_e"], "patelaVisivel": true, "rotuloCartilagem": "Cartilagens e discos", "notas": ["O écorché completo: tronco, pescoço, coluna e pelve, a cabeça do écorché principal, e os quatro membros. Os do lado esquerdo são espelhados do direito, porque o Open3Dmodel só tem o lado direito.", "Para o corpo inteiro abrir no navegador, cada parte foi simplificada pela metade com erro de até 0,1% do tamanho da peça. O detalhe máximo de cada região está na bancada dela.", "No celular (ou em tela pequena) a página abre sozinha uma versão leve, com um quinto dos vértices; no computador, a cheia.", "Com o músculo sem transparência, o corpo aparece como um écorché de museu; desligue Músculos em Camadas para ver o esqueleto e as articulações."], "ocultasPadrao": ["platysma_d", "platysma_e"], "secao": {"abertura": {"dir": [0, 0.04, 1], "dist": 4.0, "desloc": [0, -0.02, 0]}, "regioes": [{"id": "pescoco", "alvo": ["vertebra_c4", "vertebra_c5"], "dir": [-0.3, 0.15, -1], "dist": 0.85, "acende": ["sternocleidomastoid_muscle_d", "sternocleidomastoid_muscle_e", "scalenus_anterior_muscle_d", "scalenus_anterior_muscle_e", "scalenus_medius_muscle_d", "scalenus_medius_muscle_e", "scalenus_posterior_muscle_d", "scalenus_posterior_muscle_e", "splenius_capitis_muscle_d", "splenius_capitis_muscle_e", "splenius_colli_muscle_d", "splenius_colli_muscle_e", "levator_scapulae_d", "levator_scapulae_e", "semispinalis_colli_muscle_d", "semispinalis_colli_muscle_e", "spinalis_capitis_muscle_d", "spinalis_capitis_muscle_e", "spinalis_colli_muscle_d", "spinalis_colli_muscle_e", "longissimus_capitis_muscle_d", "longissimus_capitis_muscle_e", "iliocostalis_colli_muscle_d", "iliocostalis_colli_muscle_e", "multifidus_colli_muscle_d", "multifidus_colli_muscle_e", "longus_colli_muscle_d", "longus_colli_muscle_e", "longus_capitis_muscle_d", "longus_capitis_muscle_e", "sternohyoid_muscle_d", "sternohyoid_muscle_e", "sternothyroid_muscle_d", "sternothyroid_muscle_e", "omohyoid_muscle_d", "omohyoid_muscle_e", "thyrohyoid_muscle_d", "thyrohyoid_muscle_e", "mylohyoid_muscle_d", "mylohyoid_muscle_e", "geniohyoid_muscle_d", "geniohyoid_muscle_e", "stylohyoid_muscle_d", "stylohyoid_muscle_e", "anterior_belly_of_digastric_muscle_d", "anterior_belly_of_digastric_muscle_e", "posterior_belly_of_digastric_muscle_d", "posterior_belly_of_digastric_muscle_e", "intermediate_tendon_of_digastric_muscle_d", "intermediate_tendon_of_digastric_muscle_e", "descending_part_of_trapezius_muscle_d", "descending_part_of_trapezius_muscle_e"], "faixa": [1.395, 10], "cobre": ["transverse_part_of_trapezius_muscle_d", "transverse_part_of_trapezius_muscle_e", "ascending_part_of_trapezius_muscle_d", "ascending_part_of_trapezius_muscle_e", "serratus_posterior_superior_muscle_d", "serratus_posterior_superior_muscle_e", "rhomboid_minor_muscle_d", "rhomboid_minor_muscle_e", "rhomboid_major_muscle_d", "rhomboid_major_muscle_e"]}, {"id": "ombro", "alvo": ["acromial_part_of_deltoid_muscle_d", "clavicular_part_of_deltoid_muscle_d", "scapular_spinal_part_of_deltoid_muscle_d"], "dir": [-0.85, 0.25, 0.6], "dist": 1.0, "acende": ["clavicular_part_of_deltoid_muscle_d", "acromial_part_of_deltoid_muscle_d", "scapular_spinal_part_of_deltoid_muscle_d", "supraspinatus_muscle_d", "infraspinatus_muscle_d", "teres_minor_muscle_d", "subscapularis_muscle_d", "teres_major_muscle_d", "coracobrachialis_muscle_d", "superior_glenohumeral_ligament_d", "middle_glenohumeral_ligament_d", "inferior_glenohumeral_ligament_d", "coracohumeral_ligament_d", "transverse_humeral_ligament_d", "acromioclavicular_ligament_d", "glenoid_labrum_d", "cartilagem_glenoide_d", "cartilagem_humerus_head_d", "cartilagem_acromioclavicular_d"]}, {"id": "lombar", "alvo": ["vertebra_l3"], "dir": [-0.3, 0.1, -1], "dist": 1.2, "acende": ["iliocostalis_lumborum_muscle_d", "iliocostalis_lumborum_muscle_e", "longissimus_thoracis_muscle_d", "longissimus_thoracis_muscle_e", "multifidus_lumborum_muscle_d", "multifidus_lumborum_muscle_e", "quadratus_lumborum_muscle_d", "quadratus_lumborum_muscle_e", "interspinales_lumborum_muscles_d", "interspinales_lumborum_muscles_e", "iliolumbar_ligament_d", "iliolumbar_ligament_e", "intervertebral_disc_t12_l1", "intervertebral_disc_l1_l2", "intervertebral_disc_l2_l3", "intervertebral_disc_l3_l4", "intervertebral_disc_l4_l5", "intervertebral_disc_l5_s1"], "faixa": [0.945, 1.135], "cobre": ["latissimus_dorsi_muscle_d", "latissimus_dorsi_muscle_e", "serratus_posterior_inferior_muscle_d", "serratus_posterior_inferior_muscle_e", "posterior_layer_of_thoracolumbar_fascia_d", "posterior_layer_of_thoracolumbar_fascia_e"]}, {"id": "quadril-coxa", "alvo": ["femur_d"], "dir": [-0.35, 0.05, 1], "dist": 1.45, "acende": ["adductor_brevis_d", "adductor_longus_d", "adductor_magnus_d", "gracilis_muscle_d", "long_head_of_biceps_femoris_d", "pectineus_muscle_d", "rectus_femoris_muscle_d", "sartorius_muscle_d", "semimembranosus_muscle_d", "semitendinosus_muscle_d", "short_head_of_biceps_femoris_d", "tensor_fasciae_latae_d", "vastus_intermedius_muscle_d", "vastus_lateralis_muscle_d", "vastus_medialis_muscle_d"], "faixa": [0.42, 1.02]}, {"id": "joelho", "alvo": ["patella_d", "anterior_cruciate_ligament_d"], "dir": [-0.35, 0.05, 1], "dist": 0.9, "acende": ["patella_d", "cartilagem_patella_d", "patellar_ligament_d", "quadriceps_tendon_over_patella_d", "medial_patellar_retinaculum_d", "lateral_patellar_retinaculum_d", "meniscopatellar_ligament_d", "anterior_cruciate_ligament_d", "posterior_cruciate_ligament_d", "superficial_part_of_tibial_collateral_ligament_d", "deep_part_of_tibial_collateral_ligament_d", "fibular_collateral_ligament_d", "medial_meniscus_d", "lateral_meniscus_d", "transverse_ligament_of_knee_d", "posterior_meniscofemoral_ligament_d", "anterior_meniscotibial_ligament_lateral_meniscus_d", "anterior_meniscotibial_ligament_medial_meniscus_d", "posterior_meniscotibial_ligament_lateral_meniscus_d", "posterior_meniscotibial_ligament_medial_meniscus_d", "oblique_popliteal_ligament_d", "arcuate_popliteal_ligament_d", "cartilagem_femur_distal_end_d", "cartilagem_tibia_proximal_end_d", "popliteus_muscle_d"]}, {"id": "tornozelo-pe", "alvo": ["talus_d", "calcaneus_d"], "dir": [-0.707, 0.12, -0.707], "dist": 0.55, "acende": ["anterior_talofibular_ligament_d", "posterior_talofibular_ligament_d", "calcaneofibular_ligament_d", "posterior_tibiotalar_ligament_d", "tibiocalcaneal_ligament_d", "tibionavicular_ligament_d", "anterior_tibiofibular_ligament_d", "posterior_tibiofibular_ligament_d", "transverse_tibiofibular_ligament_d", "superior_extensor_retinaculum_of_ankle_d", "inferior_extensor_retinaculum_of_ankle_d", "flexor_retinaculum_of_ankle_d", "superior_fibular_retinaculum_d", "inferior_fibular_retinaculum_d", "cartilagem_talus_d", "cartilagem_tibia_distal_end_d", "cartilagem_fibula_talofibular_joint_d", "calcaneal_tendon_d"], "faixa": [-10, 0.16]}], "estilo": "azul"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+// ------------------------------------------------------------------ estado da bancada
+// ------------------------------------------------------------------ configuração da região (molde de bancada)
+const CONFIG = JSON.parse(document.getElementById('config').textContent);
+document.getElementById('titulo').textContent = CONFIG.titulo;
+document.getElementById('intro').textContent = `Gire ${CONFIG.palavra} com o dedo ou o mouse e aproxime com dois dedos ou a roda. Role este painel: ${CONFIG.palavra} fica parad${CONFIG.palavra.startsWith('a ') ? 'a' : 'o'}. Isolado: nada aqui mexe no écorché que está no ar.`;
+document.getElementById('carregando').textContent = `Carregando ${CONFIG.palavra}…`;
+document.getElementById('recarregar').textContent = `Recarregar ${CONFIG.palavra}`;
+document.getElementById('formas').innerHTML = CONFIG.formas.map((f) => `<button type="button" class="chip forma" id="f-${f.id}" data-f="${f.id}" aria-pressed="${f.id === CONFIG.formaPadrao}">${f.rotulo}</button>`).join('');
+document.getElementById('vistas').innerHTML = CONFIG.vistas.map((v) => `<button type="button" class="chip vista" data-vista="${v.id}">${v.rotulo}</button>`).join('');
+document.getElementById('notas').innerHTML = CONFIG.notas.map((n) => `<p class="nota"></p>`).join('');
+document.querySelectorAll('#notas .nota').forEach((el, i) => { el.textContent = CONFIG.notas[i]; });
+document.getElementById('b-selecao').textContent = CONFIG.rotuloSelecao;
+document.getElementById('c-cartilagem').textContent = CONFIG.rotuloCartilagem;
+document.querySelector('[data-camada="patela"]').setAttribute('aria-pressed', String(CONFIG.patelaVisivel));
+if (!CONFIG.patela.length) document.querySelector('[data-camada="patela"]').hidden = true;   // região sem patela
+const est = { forma: CONFIG.formaPadrao, material: 'novo', varOsso: 5, comparar: false, selecao: true, ao: true, estudio: true, contraste: 'forte', vidro: 1, umido: 0.3, musculoOpaco: false, rotulos: true,
+  camadas: { musculo: true, tendao: true, ligamento: true, cartilagem: true, osso: true, patela: CONFIG.patelaVisivel },
+  poros: { forca: 1, tamanho: 0.7, faixa: 6, transicao: 3, fora: 0.5 } };
+// o padrão é exatamente o que a bancada mostra ao abrir; "Restaurar o padrão" volta para cá
+Object.assign(est, CONFIG.padrao || {});   // o padrão da região: do jeito que o dono salvou ao avaliar
+const PADRAO = JSON.parse(JSON.stringify(est));
+// a seleção azul pode ser uma estrutura ou várias (o masseter do principal vem em duas partes: a superficial é só a lâmina
+// de fora, e a forma arredondada é a parte profunda)
+const SELECAO = [].concat(CONFIG.selecao || []);
+
+// modo seção (13/10): a bancada vira o palco da seção "Onde dói" da página de Serviços do site do Jonas, dentro de um
+// iframe. Sem painel, fundo transparente, sem girar com o dedo (a rolagem é da página), e a câmera desce pelas regiões
+// pelo ponto que o site manda (postMessage {tipo: 'ponto', valor}), de 0 (corpo inteiro) a 6. Liga com #secao no
+// endereço e só numa região que traga o bloco "secao" na configuração; #secao-leve pede as malhas leves.
+const SECAO = location.hash.startsWith('#secao') && CONFIG.secao ? CONFIG.secao : null;
+if (SECAO) { est.rotulos = false; est.selecao = true; SELECAO.length = 0; }
+// estilo "azul" (dono, 13/10: "a pele deve ser azul como era, mas com as nossas melhorias internas do écorché"): a pele
+// translúcida (pele_envelope.py) e a anatomia na escala de azuis da peça central do site; olhos e dentes saem (a regra da
+// cena do site: sem olhos e sem rosto)
+const AZUL = !!(SECAO && SECAO.estilo === 'azul');
+// faixa de altura da região (13/10, pedido do dono: "cada parte deve ter abrangência coerente de seleção"): músculo
+// longo que passa da região (os paravertebrais sobem as costas, o tendão do calcâneo sobe a panturrilha) só fica vermelho
+// dentro da faixa [de, até] em metros, com borda macia de 2,5 cm; fora dela volta ao azul (o fantasma some)
+// zona que some nas pontas (13/10, dono, sobre a lombar: "nas pontas a seleção vai sumindo"): a região acende cheia no
+// miolo de um elipsoide (centro uZonaC, raios uZonaR, a caixa das estruturas acesas cortada pela faixa) e esmaece até o
+// azul do miolo (72% do raio, com a caixa crescida 30%) à borda, para todos os lados
+// acender suave mas ágil (13/10, dono: "os músculos devem acender de forma suave mas ágil, não seco do jeito que tá"):
+// cada estrutura tem a sua zona e o seu quanto-acesa (uLiga, 0 a 1). Na troca de região a que sai apaga enquanto a que
+// entra acende, as duas ao mesmo tempo, em curva suave; quem fica acesa nas duas desliza a zona de uma para a outra
+const ACENDE_S = 0.32, APAGA_S = 0.26;
+const zonas = new Map();
+function zonaDe(id) {
+  let z = zonas.get(id);
+  if (!z) zonas.set(id, z = { uZonaC: { value: new THREE.Vector3() }, uZonaR: { value: new THREE.Vector3(10, 10, 10) }, uLiga: { value: SECAO ? 0 : 1 },
+    v: SECAO ? 0 : 1, alvo: SECAO ? 0 : 1, t: 1, deC: new THREE.Vector3(), deR: new THREE.Vector3(), paraC: new THREE.Vector3(), paraR: new THREE.Vector3() });
+  return z;
+}
+function faixaNoShader(sh, fantasma, z) {
+  sh.uniforms.uZonaC = z.uZonaC; sh.uniforms.uZonaR = z.uZonaR; sh.uniforms.uLiga = z.uLiga;
+  sh.fragmentShader = sh.fragmentShader.replace('uniform float uAzul;', 'uniform float uAzul; uniform vec3 uZonaC; uniform vec3 uZonaR; uniform float uLiga;').replace('#include <opaque_fragment>',
+    'float naFaixa = uLiga * (1.0 - smoothstep(0.72, 1.0, length((vPObj - uZonaC) / uZonaR)));\n' +
+    // a região acesa é sólida, sem vidro (dono, 13/10: "os músculos em seleção não devem ser transparentes ou
+    // translúcidos"); só nas pontas, onde volta ao azul, volta também ao vidro dos demais
+    // o fantasma (a parte escondida) é sólido no miolo e some de vez nas pontas e quando a região apaga
+    (fantasma ? 'diffuseColor.a = naFaixa;\n' : 'outgoingLight = mix(azulDe(outgoingLight, normal, vViewPosition), outgoingLight, naFaixa);\n' +
+      'diffuseColor.a = mix(diffuseColor.a, 1.0, naFaixa);\n') + '#include <opaque_fragment>');
+}
+function materialPele() {
+  return new THREE.ShaderMaterial({
+    name: 'pele-azul', transparent: true, depthWrite: false, side: THREE.FrontSide,
+    uniforms: { cCorpo: { value: new THREE.Color(0x0b3c7a) }, cBorda: { value: new THREE.Color(0x38bdf8) } },
+    vertexShader: 'varying vec3 vN; varying vec3 vV; void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); vV = -mv.xyz; vN = normalize(normalMatrix * normal); gl_Position = projectionMatrix * mv; }',
+    fragmentShader: 'uniform vec3 cCorpo; uniform vec3 cBorda; varying vec3 vN; varying vec3 vV;\n' +
+      'void main() { float r = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.2); gl_FragColor = vec4(mix(cCorpo, cBorda * 1.4, r), mix(0.10, 0.75, r)); }',
+  });
+}
+
+const tela = document.getElementById('tela');
+if (SECAO) {
+  const s = document.createElement('style');
+  s.textContent = 'html,body{background:transparent!important;margin:0;height:100%;overflow:hidden}[hidden]{display:none!important}' +
+    '#tela{position:fixed;inset:0;width:100%!important;height:100%!important;display:block;min-height:0}';
+  document.head.appendChild(s);
+  document.body.appendChild(tela);
+  for (const el of [...document.body.children]) if (el !== tela && el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') el.hidden = true;
+}
+// se a placa de vídeo derrubar o 3D, avisa e oferece recarregar (em vez de deixar o palco vazio)
+tela.addEventListener('webglcontextlost', (ev) => {
+  ev.preventDefault(); document.getElementById('caiu').hidden = false;
+  // no modo seção ninguém vê o aviso (o iframe só mostra o palco): a página se recarrega sozinha e avisa o site de novo
+  if (SECAO) setTimeout(() => location.reload(), 1500);
+});
+document.getElementById('recarregar').onclick = () => location.reload();
+const renderer = new THREE.WebGLRenderer({ canvas: tela, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.toneMapping = THREE.AgXToneMapping;
+// estética do écorché original (dono, 05/10: "a estética visual do original vamos replicar com o que já temos de bom"):
+// "suave" é exatamente o do original, AgX com exposição 1,0 (visualizador.ts:186-187); "forte" fica como opção
+function aplicarContraste() {
+  renderer.toneMapping = est.contraste === 'forte' ? THREE.ACESFilmicToneMapping : THREE.AgXToneMapping;
+  renderer.toneMappingExposure = est.contraste === 'forte' ? 0.95 : 1.0;
+}
+renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+const cena = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envSala = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+let envEstudio = null;
+cena.environment = envSala;
+cena.environmentIntensity = 0.4;
+// ambiente do original: a sala do three com força 0,4 (materiais.ts:66); o HDR de estúdio fica como opção, com força 1
+const forcaAmbiente = () => (est.estudio && envEstudio ? 1.0 : 0.4);
+function aplicarLuz() {
+  cena.environment = est.estudio && envEstudio ? envEstudio : envSala;
+  cena.environmentIntensity = forcaAmbiente();   // three 0.163+: com o ambiente da cena, vale esta força, não a do material
+  cena.traverse((o) => { if (o.isMesh && o.material && 'envMapIntensity' in o.material) o.material.envMapIntensity = forcaAmbiente(); });
+}
+const camera = new THREE.PerspectiveCamera(30, 16 / 10, 0.01, 10);
+cena.add(camera);
+// as três luzes do original, presas à câmera, nas direções dele no espaço da vista (materiais.ts:205-210): chave 3,0,
+// enchimento 0,5, recorte 1,0, brancas. O alvo também fica na câmera: sem isso o three mede a direção a partir da
+// origem do mundo e a luz muda de uma vista para outra (achado da especificação de 05/10)
+const alvoLuz = new THREE.Object3D(); camera.add(alvoLuz);
+function luzEstudio(intensidade, d) { const l = new THREE.DirectionalLight(0xffffff, intensidade); l.position.set(...d); l.target = alvoLuz; camera.add(l); return l; }
+const chave = luzEstudio(3.0, [-0.45, 0.62, 0.64]);
+const enche = luzEstudio(0.5, [0.65, 0.12, 0.55]);
+const recorte = luzEstudio(1.0, [0.15, 0.45, -0.88]);
+const controles = new OrbitControls(camera, tela);
+controles.enableDamping = true; controles.dampingFactor = 0.08;
+// câmera com limite (B5 do inventário: atravessava o corpo e o arrasto não tinha fim): perto até 6 cm do ponto que ela
+// olha, longe até 7 m, e esse ponto preso na caixa do corpo com folga de 5 cm (a caixa entra quando o corpo carrega)
+controles.minDistance = 0.06; controles.maxDistance = 7;
+const caixaDoAlvo = new THREE.Box3(new THREE.Vector3(-10, -10, -10), new THREE.Vector3(10, 10, 10));
+controles.addEventListener('change', () => { if (!caixaDoAlvo.containsPoint(controles.target)) caixaDoAlvo.clampPoint(controles.target, controles.target); });
+// créditos obrigatórios das licenças (H17 do inventário): o texto do écorché principal (index.ts, CREDITOS_PADRAO), mais
+// as texturas do osso (ambientCG) e a luz de estúdio (Poly Haven), que são nossas
+const CREDITOS = 'Músculos de fora: Diego Luján García (CC BY 4.0). Olhos: DEGUIDER (CC BY 4.0). Anatomia de dentro derivada de ' +
+  'Z-Anatomy e BodyParts3D (CC BY-SA 4.0), com ossos e ligamentos do Open3DModel (Open3D project, G. J. R. Maat, E. Lee, LUMC et ' +
+  'al., CC BY-SA 4.0). Dentes, gengiva e mandíbula: Human Reference Atlas (NIH, CC BY 4.0). Texturas do osso: ambientCG (CC0). ' +
+  'Luz de estúdio: Poly Haven (CC0).';
+document.getElementById('creditos').textContent = CREDITOS;
+// créditos (site, 13/10): com #secao-sem-creditos o site mostra este mesmo texto no HTML da seção, legível e fora da
+// imagem (no celular a linha quebrava em cinco e cobria um terço do corpo)
+if (SECAO && !location.hash.includes('sem-creditos')) {
+  const c = document.createElement('div'); c.textContent = CREDITOS; c.setAttribute('aria-hidden', 'true');
+  Object.assign(c.style, { position: 'fixed', left: '8px', right: '8px', bottom: '6px', font: '8px/1.25 system-ui, sans-serif',
+    color: 'rgba(255,255,255,0.55)', pointerEvents: 'none', textAlign: 'center' });
+  document.body.appendChild(c);
+}
+
+// ------------------------------------------------------------------ acabamento: sombra de contato (GTAO) e contorno da seleção
+const compositor = new EffectComposer(renderer, new THREE.WebGLRenderTarget(2, 2, { type: THREE.HalfFloatType, samples: 4 }));
+compositor.addPass(new RenderPass(cena, camera));
+const gtao = new GTAOPass(cena, camera, 2, 2);
+// a sombra de contato do original (posProcessamento.ts:50-57): raio de 6 cm fixo, sempre em meia resolução
+gtao.updateGtaoMaterial({ radius: 0.06, distanceExponent: 1.4, thickness: 1.2, scale: 1.0, samples: 16, distanceFallOff: 1.0, screenSpaceRadius: false });
+gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 12 });
+gtao.blendIntensity = 0.85;
+// pontos pretos (05/10): o músculo é desenhado dos dois lados, mas o passe de profundidade da sombra de contato só via a
+// face da frente; onde a malha do atlas dobra sobre si, a tela mostrava a face de trás e a sombra media a superfície de
+// baixo, e marcava fileiras de pontos escuros (grande dorsal, platisma, peitoral). Os dois lados no passe acabam com isso.
+if (gtao.normalMaterial) gtao.normalMaterial.side = THREE.DoubleSide;
+// o músculo de vidro não pode fazer sombra de contato: sai do passe de profundidade
+// o nome mudou na 0.180 do three (o mesmo do original): overrideVisibility virou _overrideVisibility
+const nomeVis = typeof gtao.overrideVisibility === 'function' ? 'overrideVisibility' : '_overrideVisibility';
+const gtaoVisivel = gtao[nomeVis].bind(gtao);
+// o que este gancho esconde entra na lista de devolução do próprio passe: na 0.180 ele só devolve o que ELE escondeu
+// (13/10: a pele sumia para sempre depois do primeiro quadro)
+gtao[nomeVis] = () => {
+  gtaoVisivel();
+  const lista = gtao._visibilityCache || gtao.visibilityCache;
+  cena.traverse((o) => {
+    if (o.isMesh && o.visible && ((o.userData.classe === 'musculo' && !est.musculoOpaco) || o.userData.classe === 'pele')) {
+      o.visible = false;
+      if (Array.isArray(lista)) lista.push(o); else if (lista && lista.set) lista.set(o, true);
+    }
+  });
+};
+compositor.addPass(gtao);
+// tela pequena ou de toque: a sombra de contato roda em meia resolução e com 8 amostras
+function aoLeve(w, h) {
+  const leve = Math.min(w, h) < 700 || matchMedia('(pointer: coarse)').matches;
+  gtao.updateGtaoMaterial({ samples: leve ? 10 : 16 });
+  const pr = renderer.getPixelRatio(); gtao.setSize(Math.round(w * pr / 2), Math.round(h * pr / 2));
+}
+const contorno = new OutlinePass(new THREE.Vector2(2, 2), cena, camera);
+contorno.visibleEdgeColor.set(0x3d8bff); contorno.hiddenEdgeColor.set(0x2a6fd8);
+contorno.edgeStrength = 6; contorno.edgeGlow = 0.7; contorno.edgeThickness = 1.2; contorno.pulsePeriod = 0;
+compositor.addPass(contorno);
+// correção de alfa na saída, como o original (posProcessamento.ts:61-65, MA-10): sem ela a borda pré-multiplicada sai
+// clara e desenha um fio branco em volta da silhueta
+const saida = new OutputPass();
+const fsSaida = saida.material.fragmentShader
+  .replace('gl_FragColor = texture2D( tDiffuse, vUv );', 'gl_FragColor = texture2D( tDiffuse, vUv );\n float alfaSaida = gl_FragColor.a; if (alfaSaida > 1e-4) gl_FragColor.rgb /= alfaSaida;')
+  .replace(/}\s*$/, ' gl_FragColor.rgb *= alfaSaida;\n}');
+if (fsSaida.includes('float alfaSaida')) saida.material.fragmentShader = fsSaida;
+else console.warn('OutputShader mudou: a correção do alfa não entrou');
+compositor.addPass(saida);
+
+// ------------------------------------------------------------------ texturas
+const carregador = new THREE.TextureLoader();
+function tex(nome, cor) {
+  const t = carregador.load('tex/' + nome);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  if (cor) t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+const T = {
+  iv1: tex('Ivory001A-cor.jpg', true), iv1r: tex('Ivory001A-rugosidade.jpg'),
+  iv2: tex('Ivory002A-cor.jpg', true), iv2r: tex('Ivory002A-rugosidade.jpg'),
+  esp: tex('Sponge001-cor.jpg', true),
+};
+
+// ------------------------------------------------------------------ GLSL comum
+const RUIDO = `
+float h31(vec3 p){ p = fract(p * 0.3183099 + vec3(.1,.2,.3)); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+vec3 h33(vec3 p){ return vec3(h31(p), h31(p + 19.19), h31(p + 47.47)); }
+float vruido(vec3 x){ vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(h31(i), h31(i + vec3(1,0,0)), f.x), mix(h31(i + vec3(0,1,0)), h31(i + vec3(1,1,0)), f.x), f.y),
+             mix(mix(h31(i + vec3(0,0,1)), h31(i + vec3(1,0,1)), f.x), mix(h31(i + vec3(0,1,1)), h31(i + vec3(1,1,1)), f.x), f.y), f.z); }
+float worley(vec3 p){ vec3 ip = floor(p), fp = fract(p); float d = 1.0;
+  for (int x = -1; x <= 1; x++) for (int y = -1; y <= 1; y++) for (int z = -1; z <= 1; z++) {
+    vec3 o = vec3(float(x), float(y), float(z)); vec3 r = o + h33(ip + o) - fp; d = min(d, dot(r, r)); }
+  return sqrt(d); }
+vec3 triPeso(vec3 n){ vec3 w = pow(abs(n), vec3(4.0)); return w / (w.x + w.y + w.z); }
+vec4 tri(sampler2D t, vec3 p, vec3 n, float s){ vec3 w = triPeso(n);
+  return texture2D(t, p.yz * s) * w.x + texture2D(t, p.xz * s) * w.y + texture2D(t, p.xy * s) * w.z; }
+vec3 relevo(vec3 sp, vec3 sn, float h, float k){
+  vec3 sx = normalize(dFdx(sp)), sy = normalize(dFdy(sp)); vec3 r1 = cross(sy, sn), r2 = cross(sn, sx);
+  float det = dot(sx, r1); vec2 dh = vec2(dFdx(h), dFdy(h)) * k;
+  vec3 g = sign(det) * (dh.x * r1 + dh.y * r2); return normalize(abs(det) * sn - g); }
+float lum(vec3 c){ return dot(c, vec3(0.299, 0.587, 0.114)); }
+`;
+
+// corpo azul (modo seção com estilo "azul", 13/10): a luz que sai de cada tecido vira a escala de azuis da peça central
+// do site (render do Blender: corpo #0B3C7A, interior #1668E3, borda #38BDF8), pela luminância, então fibra, tendão e
+// osso continuam se lendo; a borda vista de raspão clareia. O realce da região sai do azul (semAzul) e fica vermelho.
+const uAzul = { value: 0 };
+const AZUL_GLSL = `
+  vec3 azulDe(vec3 c, vec3 n, vec3 v) {
+    float l = clamp(dot(c, vec3(0.2126, 0.7152, 0.0722)) * 1.4, 0.0, 1.0);
+    vec3 a = mix(vec3(0.0018, 0.0103, 0.0331), vec3(0.0033, 0.0452, 0.1946), smoothstep(0.0, 0.25, l));   // #061A33 a #0B3C7A
+    a = mix(a, vec3(0.0080, 0.1384, 0.7682), 0.8 * smoothstep(0.25, 0.95, l));                         // a #1668E3
+    float raspa = pow(1.0 - abs(dot(normalize(n), normalize(v))), 2.5);
+    return a * 0.9 + vec3(0.0395, 0.5089, 0.9387) * raspa * 0.45;                                       // borda #38BDF8
+  }`;
+function injetar(mat, uniformes, corpoCor, corpoRug, corpoNormal, corpoFinal, corpoLuz, comPonta) {
+  mat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, uniformes);
+    sh.uniforms.uAzul = mat.userData.semAzul ? { value: 0 } : uAzul;
+    // posição e normal no mundo: a compressão meshopt guarda cada malha na escala dela e devolve pela matriz da peça
+    // _tendao: peso de tendão por vértice (tendao_por_vertice.py); a peça sem o atributo lê 0
+    sh.vertexShader = 'varying vec3 vPObj; varying vec3 vNObj; attribute float _tendao; varying float vTendao;\n' + (comPonta ? 'attribute float aPonta; varying float vPonta;\n' : '') +
+      sh.vertexShader.replace('#include <begin_vertex>',
+      '#include <begin_vertex>\n vPObj = (modelMatrix * vec4(position, 1.0)).xyz; vNObj = normalize(mat3(modelMatrix) * normal); vTendao = _tendao;' + (comPonta ? ' vPonta = aPonta;' : ''));
+    let decl = 'varying vec3 vPObj; varying vec3 vNObj; varying float vTendao; uniform float uAzul;\n' + (comPonta ? 'varying float vPonta;\n' : '') + RUIDO + '\n' + AZUL_GLSL + '\n';
+    for (const [k, v] of Object.entries(uniformes)) {
+      const tipo = v.value && v.value.isTexture ? 'sampler2D' : v.value && v.value.isVector3 ? 'vec3' : v.value && v.value.isColor ? 'vec3' : 'float';
+      decl += `uniform ${tipo} ${k};\n`;
+    }
+    let f = sh.fragmentShader.replace('#include <common>', '#include <common>\n' + decl);
+    if (corpoCor) f = f.replace('#include <map_fragment>', '#include <map_fragment>\n' + corpoCor);
+    if (corpoRug) f = f.replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n' + corpoRug);
+    if (corpoNormal) f = f.replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + corpoNormal);
+    if (corpoFinal) f = f.replace('#include <opaque_fragment>', corpoFinal + '\n#include <opaque_fragment>');
+    if (corpoLuz) f = f.replace('#include <lights_physical_fragment>', '#include <lights_physical_fragment>\n' + corpoLuz);
+    f = f.replace('#include <opaque_fragment>', 'if (uAzul > 0.0) outgoingLight = mix(outgoingLight, azulDe(outgoingLight, normal, vViewPosition), uAzul);\n#include <opaque_fragment>');
+    sh.fragmentShader = f;
+  };
+  mat.customProgramCacheKey = () => mat.name;
+  return mat;
+}
+
+// ------------------------------------------------------------------ materiais novos
+const uPoros = { uForca: { value: 1 }, uTam: { value: 0.7 }, uFaixa: { value: 0.06 }, uTrans: { value: 0.03 }, uJunta: { value: 0 }, uCartArt: { value: 1 }, uFora: { value: 0.5 }, uModoPonta: { value: CONFIG.pontas === 'eixo' ? 1 : 0 } };
+// cranio: osso da cabeça no corpo inteiro. O dono aprovou o crânio liso (03/10): poros com a força e o "fora" que ele
+// salvou na bancada da cabeça (0,35 da força e 0,85), relativos ao controle do corpo, que vale para todos os ossos
+function materialOsso(v, cranio = false) {
+  const m0 = materialOssoBase(v);
+  if (!cranio) return m0;
+  m0.name += '-cranio';
+  const ant = m0.onBeforeCompile;
+  m0.onBeforeCompile = (sh) => { ant(sh); sh.fragmentShader = sh.fragmentShader
+    .replace('float alcance = mix(uFora, 1.0, ponta);', 'float alcance = mix(0.85, 1.0, ponta);')
+    .replace(/uForca/g, '(uForca * 0.35)').replace('uniform float (uForca * 0.35);', 'uniform float uForca;'); };
+  return m0;
+}
+function materialOssoBase(v) {
+  const marfim = (v === 1 || v === 4) ? T.iv1 : T.iv2;
+  const rug = (v === 1 || v === 4) ? T.iv1r : T.iv2r;
+  const esponja = v === 1 || v === 2 || v === 5;   // Sponge001: vira mancha fina nas pontas
+  const codigo = v === 3 || v === 4 || v === 5;    // poros por código
+  // osso na estética do original (05/10): marfim fosco #D6C7A8 em média (rugosidade 0,82, F0 2,4%, sem verniz); a
+  // textura Ivory, a mancha da esponja e os poros são nossos e ficam, só a média e o fosco mudam (dono: manter os detalhes)
+  const m = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.82, ior: 1.37 });
+  m.name = 'osso-' + v;
+  const tomOsso = (v === 1 || v === 4) ? 'vec3(1.17, 1.18, 1.46)' : 'vec3(0.93, 0.835, 0.73)';
+  const u = Object.assign({ uMarfim: { value: marfim }, uRug: { value: rug }, uEsp: { value: T.esp } }, uPoros);
+  return injetar(m, u, `
+    vec3 nO = normalize(vNObj);
+    vec3 cm = tri(uMarfim, vPObj, nO, 7.0).rgb;
+    cm = pow(cm, vec3(1.05)) * ${tomOsso};   // a média da Ivory vira a do osso do original
+    float manchas = vruido(vPObj * 60.0) * 0.6 + vruido(vPObj * 180.0) * 0.4;
+    cm *= mix(0.92, 1.04, manchas);
+    // distância até a ponta do osso: pela altura da articulação (joelho) ou pelo eixo de cada osso (perna inteira)
+    float dPonta = mix(abs(vPObj.y - uJunta), vPonta, uModoPonta);
+    float ponta = 1.0 - smoothstep(uFaixa, uFaixa + uTrans, dPonta);
+    float alcance = mix(uFora, 1.0, ponta);   // fora das pontas os poros rareiam
+    float poro = 0.0, mancha = 0.0;
+    ${esponja ? `// a Sponge001 é lisa (luminância linear de 0,25 a 0,34): o contraste dela, normalizado, vira mancha
+    float e = lum(tri(uEsp, vPObj, nO, 22.0 / uTam).rgb);
+    float en = clamp((e - 0.255) / 0.085, 0.0, 1.0);
+    mancha = smoothstep(0.45, 0.10, en) * ponta;` : ''}
+    ${codigo ? `// células de Worley deformadas por ruído: buracos irregulares, de tamanhos variados
+    // alongados no eixo do osso, deformados em duas escalas, em três tamanhos: buracos de forma e tamanho irregulares
+    vec3 pw = vPObj * (380.0 / uTam) * vec3(1.0, 0.62, 1.0);
+    vec3 d1 = vec3(vruido(pw * 0.45), vruido(pw * 0.45 + 11.0), vruido(pw * 0.45 + 23.0)) - 0.5;
+    vec3 d2 = vec3(vruido(pw * 1.7 + 3.0), vruido(pw * 1.7 + 17.0), vruido(pw * 1.7 + 29.0)) - 0.5;
+    pw += d1 * 1.8 + d2 * 0.45;
+    float w1 = worley(pw), w2 = worley(pw * 2.3 + 7.0), w3 = worley(pw * 4.1 + 13.0);
+    float lim = 0.10 + 0.16 * vruido(vPObj * 140.0);
+    poro = max(max(1.0 - smoothstep(lim * 0.5, lim, w1), 0.8 * (1.0 - smoothstep(0.06, 0.14, w2))), 0.55 * (1.0 - smoothstep(0.05, 0.11, w3)));
+    float dens = vruido(vPObj * 300.0);
+    poro *= smoothstep(1.0 - alcance - 0.12, 1.0 - alcance + 0.12, dens);` : ''}
+    float pm = poro * uForca * mix(0.7, 1.0, ponta);
+    // poro menor que o pixel some de longe, como no original (de perto ele continua)
+    pm *= 1.0 - smoothstep(0.3, 0.8, length(fwidth(vPObj * (380.0 / uTam))));
+    cm *= mix(vec3(1.0), vec3(0.80, 0.72, 0.62), mancha * uForca);
+    // estética do original (05/10): o poro fica no relevo e escurece pouco a cor (o osso do original é marfim liso de
+    // longe, com poro só de perto); o fundo do poro é o próprio marfim mais escuro, não um marrom
+    vec3 fundoPoro = cm * vec3(0.42, 0.37, 0.33);
+    diffuseColor.rgb = mix(cm, fundoPoro, pm * 0.55);
+    vAltura = 1.0 - pm - mancha * uForca * 0.15;
+    // cartilagem articular (aproximada): a superfície do osso junto da articulação, virada para ela
+    float art = uCartArt * (1.0 - smoothstep(0.010, 0.020, dPonta)) * smoothstep(0.25, 0.65, abs(nO.y));
+    vArt = art;
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.711, 0.730, 0.749), art * 0.9);   // a cartilagem pérola do original
+    vAltura = mix(vAltura, 1.0, art);
+  `, `roughnessFactor = mix(clamp(0.82 + (tri(uRug, vPObj, normalize(vNObj), 7.0).r - 0.17) * 0.5 + vAlturaRug(), 0.6, 1.0), 0.3, vArt);`,
+  `normal = relevo(-vViewPosition, normal, vAltura, 0.9);`, null, null, true).withAltura();
+}
+// ganchos simples para a altura do poro, que passa da cor ao relevo
+THREE.Material.prototype.withAltura = function () {
+  const ant = this.onBeforeCompile;
+  this.onBeforeCompile = (sh) => {
+    ant(sh);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nfloat vAltura = 1.0;\nfloat vArt = 0.0;\nfloat vAlturaRug(){ return (1.0 - vAltura) * 0.35; }');
+  };
+  return this;
+};
+
+const uFibra = { uEixo: { value: new THREE.Vector3(0, 1, 0) } };
+// tendao (refino B3, 04/10): o tendão deixa de ser o ligamento com outro nome. Marfim mais quente, mais acetinado
+// (brilho direcional mais forte) e só a fibrila longa, sem o nível de feixe; o ligamento fica como foi aprovado (trava)
+function materialLigamento(sel = false, centroFolha = null, tendao = false, leque = null) {
+  // sel: a estrutura selecionada vira um cordão azul com as fibras brancas, como na imagem de referência
+  // centroFolha: lâmina larga que cobre o crânio (a gálea). A fibra num eixo fixo, vista de ponta na nuca, virava mancha;
+  // na lâmina ela corre pela superfície, pelo ângulo em volta do centro da cabeça (da testa, por cima, até a nuca)
+  // estética do original (05/10): tendão branco-pérola acetinado #EDE8DB (rugosidade 0,3, F0 3,1%), ligamento creme
+  // fosco #D1CCBD (0,55, F0 2,4%) com a borda escurecida (materiais.ts:413-461, 975, 979); sem sheen. A seleção azul fica
+  const m = new THREE.MeshPhysicalMaterial({ color: sel ? 0x8fbaf2 : tendao ? 0xede8db : 0xd1ccbd, roughness: sel ? 0.32 : tendao ? 0.32 : 0.55, ior: tendao ? 1.44 : 1.37,
+    sheen: sel ? 1 : 0, sheenColor: new THREE.Color(0xd8e8ff), sheenRoughness: 0.35, anisotropy: sel ? 0.7 : tendao ? 0.5 : 0.3,
+    emissive: new THREE.Color(sel ? 0x1e6fd9 : 0x000000), emissiveIntensity: sel ? 0.35 : 0 });
+  m.name = sel ? 'ligamento-sel' : centroFolha ? 'ligamento-folha' : 'ligamento';
+  if (leque) m.name += '-leque';
+  return injetar(m, { uEixo: { value: new THREE.Vector3(0, 1, 0) }, uCentroFolha: { value: centroFolha || new THREE.Vector3() },
+    uApice: { value: leque ? leque.apice : new THREE.Vector3() }, uNormalLeque: { value: leque ? leque.normal : new THREE.Vector3(0, 0, 1) },
+    uBaixo: { value: leque ? leque.baixo : new THREE.Vector3(0, -1, 0) } }, `
+    ${leque ? `// aponeurose palmar (auditor r7): a fibra abre em leque do ápice no punho para os dedos; coordenada transversal é o
+    // ângulo em volta do ápice, no plano da lâmina, e a longitudinal é a distância a ele
+    vec3 rel = vPObj - uApice; vec3 nn = normalize(uNormalLeque);
+    vec3 u0 = normalize(uBaixo - nn * dot(uBaixo, nn)); vec3 w0 = cross(nn, u0);
+    float r = length(rel - nn * dot(rel, nn)); float th = atan(dot(rel, w0), dot(rel, u0));
+    vec3 q = vec3(th * 0.06 * 2600.0, dot(rel, nn) * 2600.0, r * 40.0);
+    vec3 qf = vec3(th * 0.06 * 520.0, dot(rel, nn) * 520.0, r * 12.0);` : centroFolha ? `// só a largura (x) e o ângulo: a distância ao centro muda ao longo da fibra e fazia mancha; feixe mais largo que no
+    // ligamento, porque a lâmina é vista de longe (a fibra de 0,4 mm virava chuvisco)
+    vec3 rel = vPObj - uCentroFolha; float th = atan(rel.y, rel.z) * 0.09;
+    vec3 q = vec3(rel.x * 900.0, th * 30.0, 0.5);
+    vec3 qf = vec3(rel.x * 260.0, th * 10.0, 3.5);` : `vec3 ax = normalize(uEixo); vec3 b1 = normalize(cross(ax, abs(ax.y) < 0.9 ? vec3(0,1,0) : vec3(1,0,0))); vec3 b2 = cross(ax, b1);
+    // fibra em dois níveis, sempre na direção do ligamento: feixes (fascículos) e fibrilas finas
+    vec3 q = vec3(dot(vPObj, b1) * 2600.0, dot(vPObj, b2) * 2600.0, dot(vPObj, ax) * 40.0);
+    vec3 qf = vec3(dot(vPObj, b1) * 520.0, dot(vPObj, b2) * 520.0, dot(vPObj, ax) * 12.0);`}
+    // fibra mais fina que o pixel vira espinha de peixe (moiré) de longe ou de lado: some suave para o tom médio
+    float aaF = 1.0 - smoothstep(0.35, 0.9, length(fwidth(q.xy)));
+    // feixes grossos (fascículos de alguns mm) que continuam visíveis de longe, quando a fibra fina já sumiu no antisserrilhado
+    vec3 qg = q * vec3(0.12, 0.12, 0.6) + 3.0;
+    float aaG = 1.0 - smoothstep(0.35, 0.9, length(fwidth(qg.xy)));
+    ${tendao ? `float fib = mix(0.5, 0.75 * vruido(q) + 0.25 * vruido(q * 0.5 + 7.0), aaF);
+    diffuseColor.rgb *= mix(0.9, 1.04, mix(0.5, smoothstep(0.25, 0.75, vruido(qg)), aaG));
+    vAltura = fib;
+    diffuseColor.rgb *= mix(0.82, 1.06, fib);` : `float fib = mix(0.225, 0.45 * vruido(q), aaF) + 0.55 * smoothstep(0.25, 0.75, vruido(qf));
+    vAltura = fib;
+    // feixes do ligamento como no original (0,91 a 1,05), neutros, e a borda escurecida vista de raspão (materiais.ts:461)
+    diffuseColor.rgb *= mix(0.91, 1.05, fib);
+    ${sel ? '' : 'diffuseColor.rgb *= mix(0.72, 1.0, smoothstep(0.08, 0.45, abs(dot(normalize(vNormal), normalize(vViewPosition)))));'}`}
+    ${sel ? 'diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.96, 0.98, 1.0), 0.75 * smoothstep(0.55, 0.85, fib));' : ''}
+  `, null, `normal = relevo(-vViewPosition, normal, vAltura, 0.55);`).withAltura();
+}
+function materialCartilagem() {
+  // cartilagem pérola do original (#DBDEE0, rugosidade 0,3, F0 3,6%), no lugar do azul saturado: luz morna no lado de
+  // sombra e um halo quente de raspão (materiais.ts:499-503)
+  const m = new THREE.MeshPhysicalMaterial({ color: 0xdbdee0, roughness: 0.3, ior: 1.47 });
+  m.name = 'cartilagem';
+  return injetar(m, {}, `
+    float mo = vruido(vPObj * 260.0);
+    diffuseColor.rgb *= mix(0.97, 1.02, mo);
+  `, null, null, `
+    float nvC = abs(dot(normalize(normal), normalize(vViewPosition)));
+    float luzChaveC = max(dot(normal, normalize(vec3(-0.45, 0.62, 0.64))), 0.0);
+    outgoingLight += diffuseColor.rgb * vec3(0.05, 0.045, 0.042) * (1.0 - luzChaveC) + diffuseColor.rgb * vec3(1.0, 0.82, 0.76) * 0.1 * pow(1.0 - nvC, 3.0);
+  `);
+}
+const uVidro = { value: 1 };
+const uUmido = { value: 0.3 };
+const uOpaco = { value: 0 };
+const uRelevoMusc = { value: 0.22 };   // força do relevo procedural da fibra no músculo
+// o vermelho do músculo é o que tínhamos antes do porte da estética do original (dono, 05/10: "Vamos voltar e manter a
+// coloração vermelha que tínhamos. E não precisa perguntar."): vermelho #9C2A25, película d'água e sheen, como no ponto
+// ponto-2026-10-05-antes-da-estetica-do-original. O resto do porte (osso, tendão, ligamento, cartilagem, luz) fica.
+// lujan: músculo da face do Luján (cabeça). O tom é exatamente o nosso, o aprovado (dono, 03/10: "os músculos da cabeça
+// idênticos na tonalidade dos demais"); da textura do Luján saem só o branco do tendão (onde a cor dela não tem
+// saturação) e o relevo esculpido. Casca de um lado só, desenhada pela frente como no principal.
+function materialMusculo(lujan = null, branco = 1) {
+  const m = new THREE.MeshPhysicalMaterial({ color: 0x9c2a25, roughness: 0.46, transparent: true, depthWrite: false, side: lujan ? THREE.FrontSide : THREE.DoubleSide,
+    sheen: 0.25, sheenColor: new THREE.Color(0xff9c90), clearcoat: 1, clearcoatRoughness: 0.08 });
+  m.name = lujan ? 'musculo-lujan' : 'musculo';
+  if (lujan) { m.map = texPrincipal(lujan.cor, true); if (lujan.relevo) m.normalMap = texPrincipal(lujan.relevo, false); }
+  return injetar(m, { uEixo: { value: new THREE.Vector3(0, 1, 0) }, uVidro, uUmido, uOpaco, uRelevoMusc }, `
+    ${lujan ? `vec3 txL = texture2D(map, vMapUv).rgb;
+    float mxL = max(txL.r, max(txL.g, txL.b));
+    float tendaoL = smoothstep(0.42, 0.18, (mxL - min(txL.r, min(txL.g, txL.b))) / max(mxL, 1e-3)) * smoothstep(0.30, 0.55, mxL);
+    diffuseColor.rgb = diffuse;` : ''}
+    vec3 ax = normalize(uEixo); vec3 b1 = normalize(cross(ax, abs(ax.y) < 0.9 ? vec3(0,1,0) : vec3(1,0,0))); vec3 b2 = cross(ax, b1);
+    vec3 q = vec3(dot(vPObj, b1) * 700.0, dot(vPObj, b2) * 700.0, dot(vPObj, ax) * 18.0);
+    float fib = 0.65 * vruido(q) + 0.35 * vruido(q * 0.5 + 5.0);
+    diffuseColor.rgb *= mix(0.62, 1.12, fib);
+    // umidade irregular: a água não cobre o músculo por igual
+    float molha = uUmido * mix(0.55, 1.0, smoothstep(0.25, 0.75, vruido(vPObj * 55.0)));
+    // molhado escurece mais os tons médios (curva parecida com gama), e satura um pouco
+    diffuseColor.rgb = mix(diffuseColor.rgb, pow(diffuseColor.rgb, vec3(1.45)) * 1.05, molha);
+    // a parte de tendão do músculo (a ponta que afina, ou o branco da textura do Luján), no branco do tendão separado
+    // (#EDE8DB, o do original, que ficou) para a junção não mudar de tom, e com menos película d'água: o tendão não é
+    // vermelho até a inserção (inventário do refino, H1)
+    float tt = ${lujan ? 'tendaoL' : 'smoothstep(0.25, 0.9, vTendao)'};
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.848, 0.807, 0.711) * mix(0.9, 1.04, fib), tt * ${branco.toFixed(2)});
+    molha *= 1.0 - 0.7 * tt;
+  `, null, `
+    // a fibra fica em relevo por baixo da película d'água
+    normal = relevo(-vViewPosition, normal, fib, uRelevoMusc);
+  `, `
+    // uVidro: 0 = quase invisível no centro, 1 = vidro denso (mais vermelho, cobre mais); a borda usa a normal lisa
+    float borda = pow(1.0 - abs(dot(normalize(nonPerturbedNormal), normalize(vViewPosition))), mix(2.6, 1.4, uVidro));
+    diffuseColor.a = clamp(mix(0.02, 0.22, uVidro) + mix(0.75, 1.15, uVidro) * borda, 0.0, 0.95);
+    // o brilho da película aparece mesmo onde o vidro é quase transparente (reflexo não depende da transparência)
+    float brilhoAgua = lum((clearcoatSpecularDirect + clearcoatSpecularIndirect) * material.clearcoat);
+    diffuseColor.a = clamp(diffuseColor.a + brilhoAgua * 1.2, 0.0, 0.97);
+    diffuseColor.a = mix(diffuseColor.a, 1.0, uOpaco);   // músculo sem transparência
+  `, `
+    // película d'água: verniz liso (normal da geometria), reflexo de água (F0 0,02), mais liso onde está mais molhado
+    material.clearcoat = molha;
+    material.clearcoatF0 = vec3(0.02);
+    material.clearcoatRoughness = min(max(mix(0.22, 0.05, molha), 0.0525) + geometryRoughness, 1.0);
+  `);
+}
+function materialTendao(centroFolha = null, leque = null) { const m = materialLigamento(false, centroFolha, true, leque); m.name = centroFolha ? 'tendao-folha' : leque ? 'tendao-leque' : 'tendao'; return m; }
+function materialSelecao(base, eixo, zona = zonaDe(''), fantasma = false) {
+  if (AZUL) {   // corpo azul: a região acende em vermelho, com a fibra do nosso músculo dentro do vermelho
+    // sem o branco do tendão dentro do realce: a aponeurose do grande dorsal (lombar) e a lâmina do trapézio (nuca) liam
+    // como mancha clara no meio da região; acesa, a região inteira lê vermelho
+    const m = materialMusculo(null, 0); m.name = 'realce-vermelho'; m.userData.semAzul = true;
+    // vermelho suavizado a pedido do dono (13/10, "suavize levemente a intensidade da cor da seleção"): era #D41F12
+    // com brilho próprio 0,35
+    m.color = new THREE.Color(0xc8402f); m.emissive = new THREE.Color(0xf04a30); m.emissiveIntensity = 0.2;
+    // sólido, o vidro deixava passar pouco da cor e o tom acima saía vermelho; opaco ele lava para salmão, então o
+    // sólido volta ao vermelho do nosso músculo, com um brilho próprio leve e menos véu rosado na borda
+    m.color = new THREE.Color(0x9c2a25); m.emissive = new THREE.Color(0xd03a28); m.emissiveIntensity = 0.12; m.sheen = 0.1;
+    // sólido: grava profundidade e é desenhado depois dos músculos de vidro (ordem 2,5), para o que está atrás não
+    // transparecer por dentro do vermelho
+    m.depthWrite = true;
+    // uma passada só (site, 14/10): o vidro de dois lados era desenhado em duas passadas, com o programa procurado de
+    // novo em cada uma, a cada quadro; com o músculo opaco a transparência do realce é 1 em todo ponto e a profundidade
+    // decide o que fica na frente, então a imagem é a mesma. O fantasma some nas pontas: ele fica com as duas passadas
+    if (!fantasma && est.musculoOpaco) m.forceSinglePass = true;
+    const antF = m.onBeforeCompile;
+    m.onBeforeCompile = (sh) => { antF(sh); faixaNoShader(sh, fantasma, zona); };
+    const ant = m.onBeforeCompile;
+    if (eixo) m.onBeforeCompile = (sh) => { ant(sh); if (sh.uniforms.uEixo) sh.uniforms.uEixo.value.copy(eixo); };
+    return m;
+  }
+  if (true) {   // qualquer peça selecionada vira o cordão azul com fibras (a referência); o clone antigo saía preto
+    const m = materialLigamento(true);
+    const ant = m.onBeforeCompile;
+    if (eixo) m.onBeforeCompile = (sh) => { ant(sh); if (sh.uniforms.uEixo) sh.uniforms.uEixo.value.copy(eixo); };
+    return m;
+  }
+  const m = base.clone(); m.name = base.name + '-sel';
+  m.onBeforeCompile = base.onBeforeCompile; m.customProgramCacheKey = () => m.name;
+  m.emissive = new THREE.Color(0x1e6fd9); m.emissiveIntensity = 0.35; m.color = new THREE.Color(0xdbe8fb);
+  return m;
+}
+// a parte da estrutura selecionada que fica atrás do osso aparece em azul translúcido (só onde está escondida)
+function materialFantasma(eixo, zona) {
+  if (AZUL) {
+    // no corpo azul a parte escondida (atrás do osso ou da fáscia, como na lombar e na nuca) é o mesmo vermelho sólido
+    // do realce, desenhado só onde está escondida (dono, 13/10: "os músculos em seleção não devem ser transparentes ou
+    // translúcidos"); era um rosa a 50% e a lombar inteira parecia vidro
+    const m = materialSelecao(null, eixo, zona, true); m.name = 'fantasma-vermelho'; m.depthWrite = false;
+    Object.assign(m, { depthFunc: THREE.GreaterDepth, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+    return m;
+  }
+  const m = materialLigamento(true); m.name = 'ligamento-fantasma';
+  Object.assign(m, { transparent: true, opacity: 0.55, depthWrite: false, depthFunc: THREE.GreaterDepth, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+  m.emissiveIntensity = 0.55;
+  const ant = m.onBeforeCompile;
+  if (eixo) m.onBeforeCompile = (sh) => { ant(sh); if (sh.uniforms.uEixo) sh.uniforms.uEixo.value.copy(eixo); };
+  return m;
+}
+const casca = new THREE.MeshBasicMaterial({ color: 0x1e6fd9, side: THREE.BackSide, transparent: true, opacity: 0.9 });
+casca.onBeforeCompile = (sh) => { sh.vertexShader = sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n transformed += normal * 0.0007;'); };
+
+// ------------------------------------------------------------------ materiais de hoje (chapados, como o produto)
+const HOJE = {
+  osso: new THREE.MeshStandardMaterial({ color: 0xe6e0d4, roughness: 0.85 }),
+  ligamento: new THREE.MeshStandardMaterial({ color: 0xe9e9eb, roughness: 0.7, side: THREE.DoubleSide }),
+  tendao: new THREE.MeshStandardMaterial({ color: 0xe9e9eb, roughness: 0.7, side: THREE.DoubleSide }),
+  cartilagem: new THREE.MeshStandardMaterial({ color: 0xe1e6ee, roughness: 0.6 }),
+  musculo: new THREE.MeshStandardMaterial({ color: 0xf2b6b6, roughness: 0.6, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide }),
+};
+
+// ------------------------------------------------------------------ carga das malhas
+function eixoPrincipal(geo) {
+  const p = geo.attributes.position; const n = p.count; const c = new THREE.Vector3();
+  for (let i = 0; i < n; i++) c.add(new THREE.Vector3(p.getX(i), p.getY(i), p.getZ(i)));
+  c.divideScalar(n);
+  let xx = 0, xy = 0, xz = 0, yy = 0, yz = 0, zz = 0;
+  for (let i = 0; i < n; i++) { const x = p.getX(i) - c.x, y = p.getY(i) - c.y, z = p.getZ(i) - c.z;
+    xx += x * x; xy += x * y; xz += x * z; yy += y * y; yz += y * z; zz += z * z; }
+  let v = new THREE.Vector3(0.3, 1, 0.2).normalize();
+  for (let k = 0; k < 30; k++) { v = new THREE.Vector3(xx * v.x + xy * v.y + xz * v.z, xy * v.x + yy * v.y + yz * v.z, xz * v.x + yz * v.y + zz * v.z).normalize(); }
+  return v;
+}
+// lâmina larga (a gálea): o centro do giro da fibra fica embaixo da peça (assim o ângulo não dá a volta e não faz
+// costura na nuca), e a tangente do brilho direcional segue a mesma fibra, da testa até a nuca
+// leque (aponeurose palmar): ápice no ponto mais alto da peça (o punho, corpo de pé), fibra radial a partir dele
+function leque(o) {
+  o.updateWorldMatrix(true, false);
+  const pos = o.geometry.attributes.position, nrm = o.geometry.attributes.normal, p = new THREE.Vector3(), n = new THREE.Vector3();
+  let ymax = -Infinity; for (let i = 0; i < pos.count; i++) { p.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld); ymax = Math.max(ymax, p.y); }
+  const apice = new THREE.Vector3(), centro = new THREE.Vector3(), normal = new THREE.Vector3(); let k = 0;
+  const nm = new THREE.Matrix3().getNormalMatrix(o.matrixWorld);
+  for (let i = 0; i < pos.count; i++) {
+    p.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld); centro.add(p);
+    if (p.y > ymax - 0.003) { apice.add(p); k++; }
+    n.fromBufferAttribute(nrm, i).applyMatrix3(nm).normalize(); if (n.dot(normal) < 0 && normal.lengthSq() > 0) n.negate(); normal.add(n);
+  }
+  apice.divideScalar(k); centro.divideScalar(pos.count); normal.normalize();
+  o.userData.leque = { apice, normal, baixo: centro.clone().sub(apice) };
+  const t = new Float32Array(pos.count * 4), inv = o.matrixWorld.clone().invert(), d = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    p.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld); d.copy(p).sub(apice).transformDirection(inv);
+    n.fromBufferAttribute(nrm, i).normalize(); d.sub(n.clone().multiplyScalar(n.dot(d))).normalize();
+    t[i * 4] = d.x; t[i * 4 + 1] = d.y; t[i * 4 + 2] = d.z; t[i * 4 + 3] = 1;
+  }
+  o.geometry.setAttribute('tangent', new THREE.BufferAttribute(t, 4));
+}
+function folha(o) {
+  const caixa = new THREE.Box3().setFromObject(o), c = caixa.getCenter(new THREE.Vector3()); c.y = caixa.min.y - 0.02;
+  o.userData.centroFolha = c;
+  const pos = o.geometry.attributes.position, nrm = o.geometry.attributes.normal, t = new Float32Array(pos.count * 4);
+  const inv = o.matrixWorld.clone().invert(), p = new THREE.Vector3(), n = new THREE.Vector3(), d = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    p.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld).sub(c);
+    d.set(0, p.z, -p.y).transformDirection(inv);
+    n.set(nrm.getX(i), nrm.getY(i), nrm.getZ(i)).normalize();
+    d.sub(n.clone().multiplyScalar(n.dot(d))).normalize();
+    t[i * 4] = d.x; t[i * 4 + 1] = d.y; t[i * 4 + 2] = d.z; t[i * 4 + 3] = 1;
+  }
+  o.geometry.setAttribute('tangent', new THREE.BufferAttribute(t, 4));
+}
+function tangentes(geo, eixo) {
+  const nrm = geo.attributes.normal; const t = new Float32Array(nrm.count * 4); const n = new THREE.Vector3();
+  for (let i = 0; i < nrm.count; i++) { n.set(nrm.getX(i), nrm.getY(i), nrm.getZ(i));
+    const tv = eixo.clone().sub(n.clone().multiplyScalar(n.dot(eixo))).normalize();
+    t[i * 4] = tv.x; t[i * 4 + 1] = tv.y; t[i * 4 + 2] = tv.z; t[i * 4 + 3] = 1; }
+  geo.setAttribute('tangent', new THREE.BufferAttribute(t, 4));
+}
+
+// rótulos com linha de chamada, como na imagem de referência (o da estrutura selecionada sai sempre que há seleção)
+const ROTULOS = CONFIG.rotulos.map((r) => Object.assign({}, r));
+const ROTULO_IDS = new Set(ROTULOS.map((r) => r.id));
+for (const r of ROTULOS) { r.el = document.createElement('div'); r.el.className = 'rotulo' + (r.sel ? ' sel' : ''); r.el.textContent = r.texto; r.el.hidden = true; document.getElementById('rotulos').appendChild(r.el); }
+function ancora(geo) {   // o vértice da peça mais perto do centro da face da frente dela: o ponto fica em cima da peça, do lado que se vê
+  geo.computeBoundingBox(); const c = geo.boundingBox.getCenter(new THREE.Vector3()); c.z = geo.boundingBox.max.z;
+  const p = geo.attributes.position, v = new THREE.Vector3(), r = new THREE.Vector3(); let melhor = Infinity;
+  for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); const d = v.distanceToSquared(c); if (d < melhor) { melhor = d; r.copy(v); } }
+  return r;
+}
+const vRot = new THREE.Vector3();
+const raioRot = new THREE.Raycaster(); let vezRotulo = 0;
+// confere, um rótulo por quadro, se um osso (ou músculo sem transparência) está entre a câmera e o ponto do rótulo
+function conferirEscondido(r, o) {
+  const alvo = o.userData.ancora.clone().applyMatrix4(o.matrixWorld);
+  const dir = alvo.clone().sub(camera.position); const dist = dir.length(); dir.normalize();
+  raioRot.set(camera.position, dir); raioRot.far = dist - 0.002;
+  const tapam = pecas[est.forma].filter((x) => x !== o && x.visible && (x.userData.classe === 'osso' || (x.userData.classe === 'musculo' && est.musculoOpaco)));
+  r.escondido = raioRot.intersectObjects(tapam, false).length > 0;
+}
+function atualizarRotulos() {
+  // no modo seção os rótulos ficam na bancada escondida e nunca aparecem (site, 14/10): nada a procurar por quadro
+  if (SECAO) return;
+  const W = tela.clientWidth, H = tela.clientHeight, lista = [];
+  for (const r of ROTULOS) {
+    const o = (pecas[est.forma] || []).find((x) => x.userData.idEstr === r.id);
+    const ligado = (r.sel ? est.selecao : est.rotulos) && (!r.vistas || r.vistas.includes(vistaAtual));
+    if (!o || !o.visible || !ligado || !o.userData.ancora) { r.el.hidden = true; continue; }
+    if (!r.sel && ROTULOS[vezRotulo % ROTULOS.length] === r) conferirEscondido(r, o);
+    if (!r.sel && r.escondido) { r.el.hidden = true; continue; }
+    vRot.copy(o.userData.ancora).applyMatrix4(o.matrixWorld).project(camera);
+    const ax = (vRot.x / 2 + 0.5) * W, ay = (0.5 - vRot.y / 2) * H;
+    if (vRot.z > 1 || ax < 0 || ax > W || ay < 0 || ay > H) { r.el.hidden = true; continue; }
+    r.el.hidden = false; lista.push({ r, ax, ay, lado: ax < W / 2 ? 'e' : 'd' });
+  }
+  vezRotulo++;
+  let svg = '';
+  for (const lado of ['e', 'd']) {   // cada lado: rótulos na margem, na ordem da altura, sem se encostar
+    let ultimo = -Infinity;
+    for (const x of lista.filter((k) => k.lado === lado).sort((a, b) => a.ay - b.ay)) {
+      const w = x.r.el.offsetWidth, h = x.r.el.offsetHeight;
+      let y = Math.max(x.ay, ultimo + h + 8); y = Math.min(Math.max(y, h / 2 + 8), H - h / 2 - 8); ultimo = y;
+      const lx = lado === 'e' ? 12 : W - 12 - w;
+      x.r.el.style.transform = `translate(${Math.round(lx)}px, ${Math.round(y - h / 2)}px)`;
+      const bx = lado === 'e' ? 12 + w : W - 12 - w;
+      svg += `<line x1="${bx}" y1="${y}" x2="${x.ax}" y2="${x.ay}"/><circle cx="${x.ax}" cy="${x.ay}" r="3.5"${x.r.sel ? ' class="sel"' : ''}/>`;
+    }
+  }
+  document.getElementById('chamadas').innerHTML = svg;
+}
+
+const grupos = {};
+const FORMAS = CONFIG.formas.map((f) => f.id);
+const pecas = Object.fromEntries(FORMAS.map((f) => [f, []]));
+let vistaAtual = CONFIG.vistaInicial;
+let juntaY = 0, centro = new THREE.Vector3(), raio = 0.2;
+const gl = new GLTFLoader();
+gl.setMeshoptDecoder(MeshoptDecoder);
+
+// binário embrulhado em JSON (base64), porque o artefato não serve .glb nem .hdr
+async function binario(nome) {
+  // no site, o binário puro (tools/ecorche-secao/sincronizar.mjs): sem base64 para decodificar no fio principal
+  const r = await fetch(nome);
+  if (!r.ok) throw new Error('não achei ' + nome);
+  return r.arrayBuffer();
+}
+const carregando = {};
+async function garantirForma(v) {
+  if (!carregando[v]) carregando[v] = carregar(v);
+  if (grupos[v]) return;
+  const aviso = document.getElementById('carregando'); aviso.textContent = 'Carregando a forma…'; aviso.hidden = false;
+  try { await carregando[v]; aplicarMateriais(); } finally { aviso.hidden = true; }
+}
+function escolherForma(v) {
+  est.forma = v; marcar('.forma', (b) => b.dataset.f === v); aplicarVisibilidade(); selo();
+  garantirForma(v).then(() => { aplicarVisibilidade(); selo(); });
+}
+async function carregar(versao) {
+  const forma = CONFIG.formas.find((f) => f.id === versao);
+  // tela pequena ou de toque: a versão leve da forma, quando existe
+  // no modo seção quem decide é o site (o iframe é estreito até no computador)
+  const leve = !!forma.arquivoLeve && (SECAO ? location.hash.includes('leve') : (Math.min(innerWidth, innerHeight) < 700 || matchMedia('(pointer: coarse)').matches));
+  const arquivos = [].concat(leve ? forma.arquivoLeve : forma.arquivo);   // uma forma pode vir em várias partes
+  const cenas = await Promise.all(arquivos.map(async (a) => (await gl.parseAsync(await binario(a), '')).scene));
+  const raiz = new THREE.Group(); for (const c of cenas) raiz.add(c);
+  raiz.updateMatrixWorld(true);
+  raiz.traverse((o) => {
+    if (!o.isMesh) return;
+    const ex = o.userData || {};
+    const classe = ex.classe || 'musculo';
+    o.userData.classe = classe;
+    // o id da estrutura: das extras quando vem (a peça em partes, como o masseter do Luján, é uma estrutura só), senão do nome
+    o.userData.idEstr = ex.id || o.name.replace(/\.?\d{3}$/, '');
+    o.userData.patela = CONFIG.patela.includes(o.userData.idEstr);
+    o.userData.principal = ex.classe_principal || classe;
+    o.userData.grupo = ex.grupo || '';
+    o.userData.fonte = ex.fonte || '';
+    o.userData.material = ex.material || classe;   // a peça branca do Luján: camada de músculo, material de tendão
+    // a íris já vem fotografada: sem mapa de relevo, como no principal
+    if (ex.textura_cor) o.userData.textura = { cor: ex.textura_cor, relevo: ex.classe_principal === 'iris' ? null : ex.textura_relevo || null };
+    const eixo = ex.eixo ? new THREE.Vector3(...ex.eixo).normalize() : eixoPrincipal(o.geometry);   // a lâmina sobre a patela: a fibra desce, do quadríceps ao ligamento
+    o.userData.eixo = eixo;
+    if (ROTULO_IDS.has(o.userData.idEstr)) o.userData.ancora = ancora(o.geometry);
+    // o material de fibra tem brilho direcional (anisotropia), que precisa de tangente: ligamento, tendão e a peça selecionada
+    if (ex.leque) leque(o);
+    else if (ex.folha) folha(o);
+    // no modo seção nada começa selecionado: as estruturas que alguma região acende já ganham a tangente (sem ela, preto)
+    else if (['ligamento', 'tendao'].includes(o.userData.material) || SELECAO.includes(o.userData.idEstr) ||
+             (SECAO && SECAO.regioes.some((r) => acesasDe(r).includes(o.userData.idEstr)))) tangentes(o.geometry, eixo);
+    if (classe === 'osso') pontas(o);
+    o.renderOrder = classe === 'pele' ? 6 : classe === 'musculo' ? 2 : 0;
+    pecas[versao].push(o);
+  });
+  grupos[versao] = raiz;
+  cena.add(raiz);
+  chao(raiz);
+}
+
+// sombra de contato no chão (auditor r7: "a figura flutua"): mancha radial suave sob os pés, só quando o modelo chega ao
+// chão (corpo inteiro ou perna); a cabeça e o braço sozinhos não têm chão
+let sombraChao = null;
+function chao(raiz) {
+  const caixa = new THREE.Box3().setFromObject(raiz);
+  if (caixa.min.y > 0.12 || sombraChao) return;
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d'), gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  gr.addColorStop(0, 'rgba(20,30,50,0.42)'); gr.addColorStop(0.45, 'rgba(20,30,50,0.2)'); gr.addColorStop(1, 'rgba(20,30,50,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace;
+  const largura = Math.max(caixa.max.x - caixa.min.x, 0.3) * 0.75, fundo = Math.max(caixa.max.z - caixa.min.z, 0.2) * 1.6;
+  sombraChao = new THREE.Mesh(new THREE.PlaneGeometry(largura, fundo), new THREE.MeshBasicMaterial({ map: tx, transparent: true, depthWrite: false }));
+  sombraChao.rotation.x = -Math.PI / 2;
+  sombraChao.position.set((caixa.min.x + caixa.max.x) / 2, caixa.min.y + 0.0005, (caixa.min.z + caixa.max.z) / 2);
+  sombraChao.renderOrder = -1; sombraChao.name = 'sombra-do-chao';
+  cena.add(sombraChao);
+}
+
+// distância de cada vértice do osso até a ponta mais perto, ao longo do eixo principal da peça, em metros (no mundo)
+function pontas(o) {
+  const p = o.geometry.attributes.position, ax = o.userData.eixo, v = new THREE.Vector3(), t = new Float32Array(p.count);
+  let mn = Infinity, mx = -Infinity;
+  for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld); t[i] = v.dot(ax); if (t[i] < mn) mn = t[i]; if (t[i] > mx) mx = t[i]; }
+  for (let i = 0; i < p.count; i++) t[i] = Math.min(t[i] - mn, mx - t[i]);
+  o.geometry.setAttribute('aPonta', new THREE.BufferAttribute(t, 1));
+}
+
+// peças com textura (a cabeça do écorché principal) e peças de material próprio
+const texturasPrincipal = {};
+function texPrincipal(url, cor) {
+  if (!texturasPrincipal[url]) {
+    const t = carregador.load(url); t.flipY = false;   // coordenada de textura do glTF: origem em cima
+    t.colorSpace = cor ? THREE.SRGBColorSpace : THREE.NoColorSpace; t.anisotropy = 8; texturasPrincipal[url] = t;
+  }
+  return texturasPrincipal[url];
+}
+function materialTextura(tx, principal = '') {
+  // esclera lisa (0,2, F0 6%) e íris fosca só difusa, como o original (materiais.ts:504-506, 1515-1521); sem verniz
+  const iris = principal === 'iris';
+  const m = new THREE.MeshPhysicalMaterial({ map: texPrincipal(tx.cor, true), roughness: iris ? 0.9 : 0.2, ior: iris ? 1.0 : 1.65, specularIntensity: iris ? 0 : 1,
+    color: iris ? 0xffffff : new THREE.Color().setRGB(0.97, 0.95, 0.93) });
+  if (tx.relevo) { m.normalMap = texPrincipal(tx.relevo, false); m.normalScale = new THREE.Vector2(1, 1); }
+  m.name = 'textura'; return m;
+}
+const MAT_PROPRIO = {
+  dente: () => new THREE.MeshPhysicalMaterial({ color: 0xe6ddc7, roughness: 0.3, ior: 1.55 }),
+  gengiva: () => new THREE.MeshPhysicalMaterial({ color: 0xcc8080, roughness: 0.35, ior: 1.55 }),
+  // córnea só com o reflexo, somado por cima (como o principal: cor pré-multiplicada); o branco a 12% desbotava a íris
+  cornea: () => new THREE.MeshPhysicalMaterial({ color: 0x000000, roughness: 0.03, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }),
+  cristalino: () => new THREE.MeshPhysicalMaterial({ color: 0x2a1d18, roughness: 0.3 }),
+};
+
+const cacheOsso = {};
+// a mesma peça duas vezes, o verso antes da frente (site, 14/10): no verso a volta dos triângulos é invertida e a normal
+// aponta para dentro, como a passada de trás do vidro de dois lados (FLIP_SIDED inverte a normal); desenhada pela frente
+function versoEFrente(geo) {
+  const n = geo.attributes.position.count, nova = new THREE.BufferGeometry();
+  for (const [k, a] of Object.entries(geo.attributes)) {
+    if (k === 'normal') { const d = new Float32Array(n * 6), v = new THREE.Vector3(); for (let i = 0; i < n; i++) { v.fromBufferAttribute(a, i); d[i * 3] = -v.x; d[i * 3 + 1] = -v.y; d[i * 3 + 2] = -v.z; d[(n + i) * 3] = v.x; d[(n + i) * 3 + 1] = v.y; d[(n + i) * 3 + 2] = v.z; } nova.setAttribute(k, new THREE.BufferAttribute(d, 3)); }
+    else { const s = a.itemSize, d = new Float32Array(n * s * 2); for (let i = 0; i < n; i++) for (let c = 0; c < s; c++) d[i * s + c] = d[(n + i) * s + c] = a.getComponent(i, c); nova.setAttribute(k, new THREE.BufferAttribute(d, s)); }
+  }
+  const ix = geo.index ? geo.index.array : Uint32Array.from({ length: n }, (_, i) => i), d = new Uint32Array(ix.length * 2);
+  for (let i = 0; i < ix.length; i += 3) { d[i] = ix[i]; d[i + 1] = ix[i + 2]; d[i + 2] = ix[i + 1]; }
+  for (let i = 0; i < ix.length; i++) d[ix.length + i] = ix[i] + n;
+  nova.setIndex(new THREE.BufferAttribute(d, 1));
+  return nova;
+}
+function aplicarMateriais() {
+  const selecionados = [];
+  for (const versao of FORMAS) {
+    for (const o of pecas[versao]) {
+      if (o.userData.classe === 'pele') { o.material = o.userData.mPele || (o.userData.mPele = materialPele()); continue; }
+      const c = o.userData.material || o.userData.classe;
+      const sel = est.selecao && SELECAO.includes(o.userData.idEstr);
+      if (est.material === 'hoje' && !o.userData.textura) { o.material = HOJE[c] || HOJE.ligamento; }
+      else {
+        let m;
+        // a textura do Luján fica no olho e no "Hoje" (o produto como está); no "Novo" o músculo dela ganha o nosso tom
+        if (o.userData.textura && (c !== 'musculo' || est.material === 'hoje')) m = o.userData.mTex || (o.userData.mTex = materialTextura(o.userData.textura, o.userData.principal));
+        else if (o.userData.textura) m = o.userData.mMusc || (o.userData.mMusc = materialMusculo(o.userData.textura));
+        else if (MAT_PROPRIO[o.userData.principal]) m = o.userData.mProp || (o.userData.mProp = MAT_PROPRIO[o.userData.principal]());
+        else if (c === 'osso') {
+          const cr = CONFIG.regiao === 'corpo' && o.userData.fonte === 'écorché principal', k = est.varOsso + (cr ? '-cranio' : '');
+          m = cacheOsso[k] || (cacheOsso[k] = materialOsso(est.varOsso, cr)); }
+        else if (c === 'cartilagem') m = o.userData.mCart || (o.userData.mCart = materialCartilagem());
+        else if (c === 'musculo') { m = o.userData.mMusc || (o.userData.mMusc = materialMusculo()); }
+        else { m = o.userData.mLig || (o.userData.mLig = (c === 'tendao' ? materialTendao(o.userData.centroFolha, o.userData.leque) : materialLigamento(false, o.userData.centroFolha, false, o.userData.leque))); }
+        if (m.onBeforeCompile && o.userData.eixo && (!o.userData.textura || m.name === 'musculo-lujan') && !o.userData.mProp) {
+          const ant = m.onBeforeCompile; const eixo = o.userData.eixo;
+          if (!m.userData.eixoPronto) { m.onBeforeCompile = (sh) => { ant(sh); if (sh.uniforms.uEixo) sh.uniforms.uEixo.value.copy(eixo); }; m.userData.eixoPronto = true; }
+        }
+        if (sel) m = o.userData.mSel || (o.userData.mSel = materialSelecao(m, o.userData.eixo, zonaDe(o.userData.idEstr)));
+        m.envMapIntensity = forcaAmbiente();   // a força do ambiente do original (0,4) vale para todo material
+        o.material = m;
+      }
+      if (sel) selecionados.push(o);
+      if (AZUL) o.renderOrder = sel ? 2.5 : o.userData.classe === 'musculo' ? 2 : 0;
+      if (sel && !o.userData.fantasma) { const g = new THREE.Mesh(o.geometry, materialFantasma(o.userData.eixo, zonaDe(o.userData.idEstr)));
+        // no azul o realce sólido grava profundidade: o fantasma (só onde o osso esconde) vai antes dele, senão a face de
+        // trás do próprio músculo passa no teste e lava o vermelho de rosa
+        g.renderOrder = AZUL ? 2.4 : 3; o.add(g); o.userData.fantasma = g;
+        // verso e frente num desenho só (site, 14/10): o three.js desenhava as duas passadas do vidro de dois lados
+        // procurando o programa de novo em cada uma, a cada quadro. A malha do fantasma leva o verso (os triângulos
+        // invertidos, a normal para dentro) antes da frente: a placa mistura na ordem dos triângulos, a das duas passadas
+        if (g.material.transparent && g.material.side === THREE.DoubleSide) { g.geometry = versoEFrente(o.geometry); g.material.side = THREE.FrontSide; }
+      }
+      if (o.userData.fantasma) o.userData.fantasma.visible = sel;
+    }
+  }
+  contorno.selectedObjects = selecionados;
+}
+function aplicarVisibilidade() {
+  uPoros.uCartArt.value = ['melhor', 'principal'].includes(est.forma) ? 0 : 1;   // com a cartilagem de verdade (a forma melhor e a cabeça do principal), a pintada no osso desliga: no crânio ela clareava a borda dos ossos
+  for (const versao of FORMAS) {
+    if (grupos[versao]) grupos[versao].visible = versao === est.forma;
+    for (const o of pecas[versao]) {
+      let vis = !!est.camadas[o.userData.classe] && (!o.userData.patela || est.camadas.patela);
+      // regras do écorché principal para a cabeça (visualizador.ts): um olho de cada vez, e o que só aparece sem os músculos
+      const g = o.userData.grupo;
+      if (g === 'olho_rosto') vis = est.camadas.musculo;
+      else if (g === 'olho_orbita' || g === 'musculo_orbita' || g === 'boca') vis = !est.camadas.musculo;
+      else if (g === 'fascia') vis = false;
+      // fora da vista padrão por região (05/10, o platisma no corpo e no tronco): no original ele fica por baixo do
+      // esternocleidomastóideo e quase não aparece; o nosso, do atlas, cobria o pescoço inteiro como uma meia
+      if (CONFIG.ocultasPadrao && CONFIG.ocultasPadrao.includes(o.userData.idEstr)) vis = false;
+      // corpo azul: a pele aparece; olho, dente e gengiva saem (sem olhos e sem rosto); fora dele a pele não existe
+      if (o.userData.classe === 'pele') vis = AZUL;
+      else if (AZUL && (['olho_rosto', 'olho_orbita', 'boca'].includes(g) || MAT_PROPRIO[o.userData.principal] || (o.userData.textura && o.userData.classe !== 'musculo'))) vis = false;
+      // no lote (troca 10): a peça acesa é desenhada sozinha, em vermelho; a apagada, pelo lote
+      const lote = o.userData.lote;
+      if (lote) { const acesa = est.selecao && SELECAO.includes(o.userData.idEstr); lote.malha.setVisibleAt(lote.id, vis && !acesa); vis = vis && acesa; }
+      o.visible = vis;
+    }
+  }
+}
+
+function enquadrar(vista) {
+  const v = CONFIG.vistas.find((x) => x.id === vista) || CONFIG.vistas[0];
+  vistaAtual = v.id;
+  const alvo = centro.clone();
+  if (v.alvo) { const o = (pecas[est.forma] || []).find((x) => x.userData.idEstr === v.alvo); if (o) new THREE.Box3().setFromObject(o).getCenter(alvo); }
+  // a vista pode pedir camadas (o osso de perto só se vê sem os músculos); os botões de Camadas acompanham
+  if (v.camadas) { Object.assign(est.camadas, v.camadas); marcar('.camada', (b) => !!est.camadas[b.dataset.camada]); aplicarVisibilidade(); }
+  if (v.ponto) alvo.set(...v.ponto);   // um ponto fixo do modelo (a ATM fica entre o côndilo e o masseter)
+  if (v.desloc) alvo.add(new THREE.Vector3(...v.desloc));
+  const dir = new THREE.Vector3(...v.dir).normalize();
+  camera.position.copy(alvo.clone().add(dir.multiplyScalar(v.dist)));
+  controles.target.copy(alvo); controles.update();
+}
+
+function redimensionar() {
+  const w = tela.clientWidth, h = tela.clientHeight;
+  if (!w || !h) return;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  compositor.setPixelRatio(renderer.getPixelRatio()); compositor.setSize(w, h);
+  aoLeve(w, h);
+}
+new ResizeObserver(redimensionar).observe(tela);
+
+let quadros = 0, t0 = performance.now(), fps = 0;
+// ------------------------------------------------------------------ modo seção: a descida pelas regiões
+// Quadros-chave: 0 = abertura (corpo inteiro), 1 a 6 = as regiões da configuração, cada uma com o alvo (caixa das
+// estruturas), a direção e a distância da câmera. O ponto anda como no site (corpo-continuo.ts, vistaDoPonto): de k a
+// k + 0,5 a câmera desce até a região k + 1; de k + 0,5 a k + 1 ela fica parada lá, com o realce aceso. O realce é a
+// seleção azul da bancada (cordão com fibras e contorno), nas estruturas que o cartão da região diz que acendem.
+// fluidez (13/10, dono: "a movimentação fluída, sensação de 60fps"): o site manda o ponto em eventos de rolagem
+// irregulares e a câmera andava, parava e andava (medido: 23 a 29 quadros parados no meio da descida). Agora a mensagem só
+// move o ALVO; a cada quadro o ponto anda até ele com suavização pelo tempo (constante de 0,12 s), na cadência do desenho
+const secao = { chaves: [], ponto: 0, alvo: 0, ativa: -1, antes: 0 };
+const SUAVE_S = 0.12;
+function caixaDasEstruturas(ids) {
+  const b = new THREE.Box3();
+  for (const o of pecas[est.forma]) if (ids.includes(o.userData.idEstr)) b.expandByObject(o);
+  return b;
+}
+// compilar sem travar a página (site, 14/10), sem a compilação paralela da placa (Firefox): um objeto por vez, o
+// programa dele é criado e usado pela primeira vez, e o fio, que é o mesmo do site, volta à página a cada 40 ms (pedir
+// todos de uma vez enfileira a compilação inteira, e a primeira consulta espera a fila toda: 5,1 s no Firefox)
+async function compilarAosPoucos() {
+  const objetos = [];
+  cena.traverse((o) => { if (o.material) objetos.push(o); });
+  let t = performance.now();
+  for (const o of objetos) {
+    renderer.setRenderTarget(compositor.readBuffer); const materiais = renderer.compile(o, camera, cena); renderer.setRenderTarget(null);
+    for (const m of materiais) { const ps = renderer.properties.get(m).programs; if (ps) for (const x of ps.values()) x.getUniforms(); }
+    if (performance.now() - t > 40) { await new Promise((ok) => setTimeout(ok, 0)); t = performance.now(); }
+  }
+}
+// um desenho por material (site, 14/10, achado A-02 da auditoria): 988 malhas eram 989 desenhos, 8,5 ms de CPU por
+// quadro no fio da página (o mesmo do site), 42,6 ms no celular com CPU 4x. As peças de cada material entram num lote
+// (BatchedMesh), com cada vértice levado ao mundo pela matriz da peça e o eixo da fibra como atributo por vértice (era um
+// uniforme por peça). O lote recorta peça por peça pela câmera, como a cena fazia; a peça que acende sai do lote e é
+// desenhada sozinha, em vermelho, até apagar. Aos poucos, com o fio livre a cada 40 ms.
+function materialDoLote(o) {
+  const nome = o.material.name;
+  if (nome.startsWith('osso-') || nome === 'cartilagem') return o.material;   // nada por peça: o mesmo material
+  const m = nome === 'musculo' ? materialMusculo() : nome === 'musculo-lujan' ? materialMusculo(o.userData.textura)
+    : nome === 'tendao' ? materialTendao() : materialLigamento();
+  const ant = m.onBeforeCompile;
+  m.onBeforeCompile = (sh) => {
+    ant(sh);
+    sh.vertexShader = 'attribute vec3 aEixo; varying vec3 vEixoL;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vEixoL = aEixo;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vEixoL;').replaceAll('normalize(uEixo)', 'normalize(vEixoL)');
+  };
+  m.name = nome + '-lote'; m.envMapIntensity = forcaAmbiente();
+  // a profundidade e o lado são os da peça (o músculo da seção é opaco: aplicarOpaco tira o vidro depois de criar)
+  m.transparent = false; m.depthWrite = o.material.depthWrite; m.side = o.material.side;
+  return m;
+}
+async function juntarEmLotes() {
+  const abre = new Set(SECAO.regioes.flatMap((r) => r.abrir || []));
+  const JUNTAVEIS = ['musculo', 'musculo-lujan', 'cartilagem', 'ligamento', 'tendao'];
+  const lotes = new Map();
+  grupos[est.forma].updateMatrixWorld(true);
+  for (const o of pecas[est.forma]) {
+    const nome = o.material && o.material.name;
+    // peça de vidro fica fora: o vidro é desenhado peça por peça (o verso e depois a frente), e no lote a mistura mudaria
+    if (!o.visible || o.material.transparent || abre.has(o.userData.idEstr) || o.userData.classe === 'pele' || !(JUNTAVEIS.includes(nome) || /^osso-/.test(nome))) continue;
+    // a tangente só serve ao músculo com relevo de textura (o do Luján); no outro ela não entra no programa
+    const nomes = Object.keys(o.geometry.attributes).filter((k) => k !== '_tendao' && !(nome === 'musculo' && k === 'tangent')).sort();
+    const chave = [nome, o.material.map ? o.material.map.uuid : '', o.material.depthWrite, o.material.side, nomes.join(), o.userData.classe === 'musculo' ? 2 : 0].join('|');
+    if (!lotes.has(chave)) lotes.set(chave, { nomes, lista: [] });
+    lotes.get(chave).lista.push(o);
+  }
+  const mN = new THREE.Matrix3();
+  // os valores do atributo sem a quantização, com a mesma conta do three.js (denormalize), lidos direto do array
+  const valores = (a) => {
+    if (a.isInterleavedBufferAttribute) { const d = new Float64Array(a.count * a.itemSize); for (let i = 0; i < a.count; i++) for (let c = 0; c < a.itemSize; c++) d[i * a.itemSize + c] = a.getComponent(i, c); return d; }
+    const x = a.array;
+    if (!a.normalized) return x;
+    const k = x instanceof Int8Array ? 127 : x instanceof Uint8Array ? 255 : x instanceof Int16Array ? 32767 : x instanceof Uint16Array ? 65535 : 0;
+    if (!k) throw new Error('lote: atributo normalizado de tipo inesperado');
+    const d = new Float64Array(x.length), sinal = x instanceof Int8Array || x instanceof Int16Array;
+    for (let i = 0; i < x.length; i++) d[i] = sinal ? Math.max(x[i] / k, -1) : x[i] / k;
+    return d;
+  };
+  const t0 = performance.now();
+  let t = t0;
+  const folga = async () => { if (performance.now() - t > 40) { await new Promise((ok) => setTimeout(ok, 0)); t = performance.now(); } };
+  const feitos = [];
+  for (const { nomes, lista } of lotes.values()) {
+    const o0 = lista[0], comEixo = !/^osso-|^cartilagem$/.test(o0.material.name), musculo = o0.material.name.startsWith('musculo');
+    let nv = 0, ni = 0;
+    for (const o of lista) { nv += o.geometry.attributes.position.count; ni += o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count; }
+    const lote = new THREE.BatchedMesh(lista.length, nv, ni, materialDoLote(o0));
+    for (const o of lista) {
+      const g = o.geometry, n = g.attributes.position.count, e = o.matrixWorld.elements, saida = {};
+      const q = mN.getNormalMatrix(o.matrixWorld).elements, mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+      // as contas de applyMatrix4, applyMatrix3 com normalize e transformDirection do three.js, termo a termo
+      for (const k of nomes) {
+        const a = g.attributes[k], s = a.itemSize, d = saida[k] = new Float32Array(n * s), x = valores(a);
+        if (k === 'position') for (let i = 0; i < n; i++) {
+          const X = x[i * 3], Y = x[i * 3 + 1], Z = x[i * 3 + 2], w = 1 / (e[3] * X + e[7] * Y + e[11] * Z + e[15]);
+          d[i * 3] = (e[0] * X + e[4] * Y + e[8] * Z + e[12]) * w; d[i * 3 + 1] = (e[1] * X + e[5] * Y + e[9] * Z + e[13]) * w; d[i * 3 + 2] = (e[2] * X + e[6] * Y + e[10] * Z + e[14]) * w;
+          for (let c = 0; c < 3; c++) { const val = d[i * 3 + c]; if (val < mn[c]) mn[c] = val; if (val > mx[c]) mx[c] = val; }
+        } else if (k === 'normal') for (let i = 0; i < n; i++) {
+          const X = x[i * 3], Y = x[i * 3 + 1], Z = x[i * 3 + 2];
+          const nx = q[0] * X + q[3] * Y + q[6] * Z, ny = q[1] * X + q[4] * Y + q[7] * Z, nz = q[2] * X + q[5] * Y + q[8] * Z, l = 1 / (Math.sqrt(nx * nx + ny * ny + nz * nz) || 1);
+          d[i * 3] = nx * l; d[i * 3 + 1] = ny * l; d[i * 3 + 2] = nz * l;
+        } else if (k === 'tangent') for (let i = 0; i < n; i++) {
+          const X = x[i * 4], Y = x[i * 4 + 1], Z = x[i * 4 + 2];
+          const tx = e[0] * X + e[4] * Y + e[8] * Z, ty = e[1] * X + e[5] * Y + e[9] * Z, tz = e[2] * X + e[6] * Y + e[10] * Z, l = 1 / (Math.sqrt(tx * tx + ty * ty + tz * tz) || 1);
+          d[i * 4] = tx * l; d[i * 4 + 1] = ty * l; d[i * 4 + 2] = tz * l; d[i * 4 + 3] = x[i * 4 + 3];
+        } else d.set(x.length === d.length ? x : x.subarray(0, d.length));
+      }
+      // o peso de tendão por vértice: a peça sem ele lia 0 (atributo ausente), aqui o 0 vai escrito
+      if (musculo) { saida._tendao = new Float32Array(n); if (g.attributes._tendao) saida._tendao.set(valores(g.attributes._tendao)); }
+      if (comEixo) { const e = o.userData.eixo, d = saida.aEixo = new Float32Array(n * 3); for (let i = 0; i < n; i++) { d[i * 3] = e.x; d[i * 3 + 1] = e.y; d[i * 3 + 2] = e.z; } }
+      const geo = new THREE.BufferGeometry();
+      for (const [k, d] of Object.entries(saida)) geo.setAttribute(k, new THREE.BufferAttribute(d, d.length / n));
+      geo.setIndex(new THREE.BufferAttribute(g.index ? Uint32Array.from(g.index.array) : Uint32Array.from({ length: n }, (_, i) => i), 1));
+      // a caixa da peça sai do laço acima: sem ela o lote varre as 982 peças de uma vez no primeiro desenho (medido: a
+      // maior trava da montagem passava de 1,6 s para 2,5 s com CPU 4x). A esfera de cada peça não é usada (o lote não
+      // recorta nem ordena peça por peça)
+      geo.boundingBox = new THREE.Box3(new THREE.Vector3(...mn), new THREE.Vector3(...mx));
+      o.userData.lote = { malha: lote, id: lote.addInstance(lote.addGeometry(geo)) };
+      await folga();
+    }
+    lote.computeBoundingBox(); lote.boundingSphere = lote.boundingBox.getBoundingSphere(new THREE.Sphere());
+    lote.name = 'lote-' + o0.material.name; lote.renderOrder = o0.userData.classe === 'musculo' ? 2 : 0;
+    lote.userData = { classe: o0.userData.classe, pecas: lista.length };
+    // o three.js 0.180 confere colorTexture no lote (o nome certo é _colorsTexture) e, sem ela, toma o material por
+    // alterado a cada desenho e procura o programa de novo: com null a conferência bate
+    lote.colorTexture = null;
+    // sem reordenar a cada quadro: os lotes são opacos (a profundidade decide a imagem) e a ordem das peças é a da cena
+    // (cada peça tinha o seu material, e a cena desenhava pela ordem dos materiais, que é a das peças)
+    lote.sortObjects = false;
+    // e sem recortar peça por peça pela câmera a cada quadro (custava 0,7 ms por quadro com CPU 4x): a placa desenha o
+    // lote inteiro, que é o mesmo corpo inteiro que ela já desenha na abertura da seção
+    lote.perObjectFrustumCulled = false;
+    feitos.push(lote);
+  }
+  for (const lote of feitos) cena.add(lote);
+  aplicarVisibilidade();
+  window.__lotes = { desenhos: feitos.length, pecas: feitos.reduce((s, l) => s + l.userData.pecas, 0), ms: Math.round(performance.now() - t0) };
+}
+async function iniciarSecao() {
+  const corpo = new THREE.Box3().setFromObject(grupos[est.forma]);
+  if (AZUL) await juntarEmLotes();
+  // giro: graus que a câmera gira em volta da direção do olhar (o tornozelo de lado, com o pé apontando para cima a 45°)
+  const chave = (alvo, dir, dist, giro = 0) => ({ alvo, dir: new THREE.Vector3(...dir).normalize(), dist, giro });
+  const a = SECAO.abertura;
+  secao.chaves.push(chave(corpo.getCenter(new THREE.Vector3()).add(new THREE.Vector3(...(a.desloc || [0, 0, 0]))), a.dir, a.dist));
+  for (const r of SECAO.regioes) {
+    const b = caixaDasEstruturas(r.alvo);
+    const alvo = b.isEmpty() ? corpo.getCenter(new THREE.Vector3()) : b.getCenter(new THREE.Vector3());
+    if (r.desloc) alvo.add(new THREE.Vector3(...r.desloc));
+    secao.chaves.push(chave(alvo, r.dir, r.dist, r.giro || 0));
+  }
+  addEventListener('message', (ev) => {
+    if (ev.source !== parent) return;   // só a página que contém o corpo dirige a câmera (revisão do Fable, 13/10)
+    if (ev.data && ev.data.tipo === 'ponto' && Number.isFinite(ev.data.valor)) {
+      secao.alvo = Math.max(0, Math.min(SECAO.regioes.length, ev.data.valor));
+      if (!secao.recebeu) { secao.recebeu = true; secao.ponto = secao.alvo; secao.avisar = true; }
+    }
+  });
+  controles.enabled = false;
+  // matrizes paradas (site, 14/10): no modo seção nenhuma peça se move, só a câmera e as luzes presas a ela; a cena
+  // recompunha a matriz de cada uma das 1.200 peças a cada quadro (updateMatrixWorld: 0,7 s numa rolagem com CPU 4x)
+  cena.updateMatrixWorld(true);
+  cena.traverse((o) => { let x = o; while (x && x !== camera) x = x.parent; if (!x) o.matrixAutoUpdate = false; });
+  // e a descida pelas peças só passa pelas à vista (a acesa e o fantasma dela, criado depois): as escondidas, paradas,
+  // já têm a matriz certa
+  grupos[est.forma].updateMatrixWorld = function () {
+    this.traverseVisible((o) => { if (o !== this && (o.matrixAutoUpdate || o.matrixWorldNeedsUpdate)) { o.updateMatrix(); o.matrixWorld.multiplyMatrices(o.parent.matrixWorld, o.matrix); o.matrixWorldNeedsUpdate = false; } });
+  };
+  window.__secao = secao;   // leitura para a régua de fluidez
+  if (AZUL) { uAzul.value = 1; contorno.visibleEdgeColor.set(0xf0806a); contorno.hiddenEdgeColor.set(0xc8503c); contorno.edgeStrength = 4; contorno.edgeGlow = 0.5; }
+  // fluidez no celular (13/10): na tela 2x o quadro passava de 33 ms e travava meio segundo perto do joelho (medido). No
+  // corpo azul a sombra de contato quase não se vê (os pôsteres do site não têm) e o contorno não é usado: os dois passes
+  // saem, e a resolução fica em até 1,5x (nítida no celular, com menos da metade dos pixels de 2x)
+  if (AZUL) { gtao.enabled = false; contorno.enabled = false; renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); redimensionar(); }
+  // aquecimento (13/10): o realce de cada região compilava o material na primeira vez que ela acendia, e o quadro parava
+  // quase 1 segundo (medido: 983 ms). Antes de avisar o site, cada região acende uma vez fora da tela e um quadro é
+  // desenhado, para todo programa de sombreamento já estar pronto; depois volta ao corpo sem realce
+  for (let i = 0; i < SECAO.regioes.length; i++) {
+    const r = SECAO.regioes[i];
+    SELECAO.length = 0; SELECAO.push(...acesasDe(r));
+    aplicarMateriais(); aplicarVisibilidade();
+    const v = secao.chaves[i + 1]; camera.position.copy(v.alvo.clone().add(v.dir.clone().multiplyScalar(v.dist))); camera.lookAt(v.alvo);
+    // compilar sem travar a página (site, 14/10): os programas da região são pedidos antes do desenho, com o alvo do
+    // compositor (o programa depende dele); com a compilação paralela da placa, o fio da página, que é o mesmo do site,
+    // fica livre enquanto ela compila; sem ela, um objeto por vez
+    if (renderer.extensions.has('KHR_parallel_shader_compile')) {
+      renderer.setRenderTarget(compositor.readBuffer); const prontos = renderer.compileAsync(cena, camera); renderer.setRenderTarget(null);
+      await prontos;
+    } else await compilarAosPoucos();
+    compositor.render();
+  }
+  SELECAO.length = 0; aplicarMateriais(); aplicarVisibilidade(); secao.ativa = -1;
+  if (parent !== window) parent.postMessage({ tipo: 'pronto' }, '*');
+}
+function vistaDaSecao(p) {
+  const C = secao.chaves, n = C.length - 1;
+  const k = Math.min(n, Math.floor(p)), f = p - k;
+  let a = C[k], b = C[k], s = 0, ativa = k;
+  // chega em 0,45, como o motor do site (que dá a região por chegada ali e só esmaece o pôster até 0,5)
+  if (k < n && f < 0.45) { b = C[k + 1]; s = f / 0.45; s = s * s * (3 - 2 * s); ativa = f < 0.12 ? k : 0; }
+  else if (k < n) { a = b = C[k + 1]; ativa = k + 1; }
+  const alvo = a.alvo.clone().lerp(b.alvo, s);
+  // virada em arco (slerp): da lombar (de costas) ao quadril (de frente) o lerp linear girava quase tudo num trecho curto
+  const giroArco = new THREE.Quaternion().slerp(new THREE.Quaternion().setFromUnitVectors(a.dir, b.dir), s);
+  const dir = a.dir.clone().applyQuaternion(giroArco).normalize();
+  const dist = Math.exp(Math.log(a.dist) + (Math.log(b.dist) - Math.log(a.dist)) * s);   // zoom em escala de razão
+  const giro = a.giro + (b.giro - a.giro) * s;
+  return { alvo, pos: alvo.clone().add(dir.clone().multiplyScalar(dist)), ativa, giro, dir };
+}
+function passoDaSecao() {
+  const agora = performance.now(), dt = secao.antes ? Math.min(0.1, (agora - secao.antes) / 1000) : 0; secao.antes = agora;
+  secao.ponto += (secao.alvo - secao.ponto) * (1 - Math.exp(-dt / SUAVE_S));
+  if (Math.abs(secao.alvo - secao.ponto) < 1e-4) secao.ponto = secao.alvo;
+  const v = vistaDaSecao(secao.ponto);
+  camera.position.copy(v.pos); controles.target.copy(v.alvo);
+  camera.up.set(0, 1, 0).applyAxisAngle(v.dir.clone().negate(), THREE.MathUtils.degToRad(v.giro));
+  camera.lookAt(v.alvo);
+  if (v.ativa !== secao.ativa) {
+    secao.ativa = v.ativa;
+    const t0Troca = performance.now();
+    const r = v.ativa > 0 ? SECAO.regioes[v.ativa - 1] : null;
+    const novos = r ? acesasDe(r) : [];
+    for (const [id, z] of zonas) if (!novos.includes(id)) z.alvo = 0;   // a região que sai apaga, sem sumir de uma vez
+    if (novos.length) {
+      const b = caixaDasEstruturas(r.acende);   // a zona sai só da região; a cobertura não a alarga
+      if (r.faixa) { b.min.y = Math.max(b.min.y, r.faixa[0]); b.max.y = Math.min(b.max.y, r.faixa[1]); }
+      const C = b.getCenter(new THREE.Vector3()), R = b.getSize(new THREE.Vector3()).multiplyScalar(0.5 * 1.3).max(new THREE.Vector3(0.03, 0.03, 0.03));
+      for (const id of novos) {
+        const z = zonaDe(id); z.alvo = 1;
+        if (z.v > 0) { z.deC.copy(z.uZonaC.value); z.deR.copy(z.uZonaR.value); z.t = 0; }   // já acesa: a zona desliza
+        else { z.uZonaC.value.copy(C); z.uZonaR.value.copy(R); z.t = 1; }
+        z.paraC.copy(C); z.paraR.copy(R);
+      }
+    }
+    for (const id of novos) if (!SELECAO.includes(id)) SELECAO.push(id);   // a que sai continua até apagar
+    aplicarRegiao(r);
+    (secao.tempos = secao.tempos || []).push([v.ativa, +(performance.now() - t0Troca).toFixed(1)]);
+  }
+  // acender e apagar no tempo (curva suave nos dois sentidos); quem apagou de todo volta ao vidro azul
+  let apagou = false;
+  for (const [id, z] of zonas) {
+    if (z.v !== z.alvo) {
+      z.v = z.alvo > z.v ? Math.min(1, z.v + dt / ACENDE_S) : Math.max(0, z.v - dt / APAGA_S);
+      z.uLiga.value = z.v * z.v * (3 - 2 * z.v);
+      if (z.v === 0) { const i = SELECAO.indexOf(id); if (i >= 0) { SELECAO.splice(i, 1); apagou = true; } }
+    }
+    if (z.t < 1) {
+      z.t = Math.min(1, z.t + dt / ACENDE_S); const e = z.t * z.t * (3 - 2 * z.t);
+      z.uZonaC.value.lerpVectors(z.deC, z.paraC, e); z.uZonaR.value.lerpVectors(z.deR, z.paraR, e);
+    }
+  }
+  if (apagou) aplicarRegiao(secao.ativa > 0 ? SECAO.regioes[secao.ativa - 1] : null);
+}
+// o que acende numa região: as estruturas dela e a camada de cima que as cobre ("cobre"). Sem a cobertura, a parte
+// escondida aparecia por cima do trapézio (nuca) e do grande dorsal (lombar) e o músculo parecia trocar de forma ao
+// acender (dono, 13/10); com ela, a superfície que já se via só fica vermelha, cortada pela mesma zona
+function acesasDe(r) { return (r.acende || []).concat(r.cobre || []); }
+function aplicarRegiao(r) {
+  aplicarMateriais(); aplicarVisibilidade();
+  if (AZUL) contorno.selectedObjects = [];   // contorno daria borda dura; a região some nas pontas
+  if (r && r.abrir) for (const o of pecas[est.forma]) if (r.abrir.includes(o.userData.idEstr)) o.visible = false;
+}
+
+// pausa (site, 13/10): com a seção fora da tela o site manda {tipo: 'pausa', valor: true}, e o laço para de desenhar
+let pausado = false, parado = false;
+const quieto = { chave: null, ultimo: 0, desenhados: 0, pulados: 0 }; window.__quieto = quieto;
+addEventListener('message', (ev) => {
+  if (ev.source !== parent || !ev.data || ev.data.tipo !== 'pausa') return;
+  pausado = !!ev.data.valor;
+  if (!pausado && parado) { parado = false; secao.antes = 0; requestAnimationFrame(laco); }
+});
+function laco() {
+  if (pausado) { parado = true; return; }
+  if (SECAO && secao.chaves.length) passoDaSecao(); else controles.update();
+  // quieto (site, 13/10): no modo seção, sem câmera, realce ou tamanho mudando, o quadro é o mesmo; redesenha só a
+  // cada meio segundo (seguro para a textura que chega depois). Enquanto a pessoa lê o cartão, a CPU e a placa param.
+  const chaveQuieto = SECAO ? [secao.ponto, secao.ativa, tela.width, tela.height, SELECAO.length, ...[...zonas.values()].map((z) => `${z.v}:${z.t}`)].join() : null;
+  const agoraQuieto = performance.now();
+  if (!SECAO || chaveQuieto !== quieto.chave || agoraQuieto - quieto.ultimo > 500) {
+    compositor.render(); atualizarRotulos(); quieto.chave = chaveQuieto; quieto.ultimo = agoraQuieto; quieto.desenhados++;
+  } else quieto.pulados++;
+  // chegada no ponto: o quadro desenhado já é o do ponto, com o realce assentado; o site pode mostrar o 3D
+  if (SECAO && secao.avisar && secao.ponto === secao.alvo && [...zonas.values()].every((z) => z.v === z.alvo && z.t >= 1)) { secao.avisar = false; parent.postMessage({ tipo: 'no-ponto' }, '*'); }
+  quadros++; const t = performance.now(); if (t - t0 > 1000) { fps = quadros * 1000 / (t - t0); quadros = 0; t0 = t; }
+  requestAnimationFrame(laco);
+}
+
+function atualizarPoros() {
+  uPoros.uForca.value = est.poros.forca; uPoros.uTam.value = est.poros.tamanho;
+  uPoros.uFaixa.value = est.poros.faixa / 100; uPoros.uTrans.value = est.poros.transicao / 100; uPoros.uJunta.value = juntaY;
+  uPoros.uFora.value = est.poros.fora;
+  for (const k of ['forca', 'tamanho', 'faixa', 'transicao', 'fora']) {
+    const v = est.poros[k];
+    document.getElementById('v-' + k).textContent = k === 'faixa' || k === 'transicao' ? v + ' cm' : k === 'tamanho' ? v.toFixed(2) + 'x' : Math.round(v * 100) + '%';
+  }
+}
+
+(async () => {
+  try {
+    const hdr = binario('tex/studio_small_08_1k.hdr').then((buf) => {
+      const d = new RGBELoader().parse(buf);
+      const t = new THREE.DataTexture(d.data, d.width, d.height, THREE.RGBAFormat, d.type);
+      t.mapping = THREE.EquirectangularReflectionMapping; t.colorSpace = THREE.LinearSRGBColorSpace;
+      t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false; t.flipY = true; t.needsUpdate = true;
+      envEstudio = pmrem.fromEquirectangular(t).texture; t.dispose();
+    });
+    carregando[est.forma] = carregar(est.forma);
+    await Promise.all([carregando[est.forma], hdr]);
+    aplicarLuz();
+    const caixa = new THREE.Box3().setFromObject(grupos[est.forma]);
+    caixa.getCenter(centro); raio = caixa.getSize(new THREE.Vector3()).length() / 2;
+    caixaDoAlvo.copy(caixa).expandByScalar(0.05);
+    const marco = CONFIG.centro && pecas[est.forma].find((o) => o.userData.idEstr === CONFIG.centro);
+    if (marco) { const b = new THREE.Box3().setFromObject(marco); const c = b.getCenter(new THREE.Vector3()); juntaY = c.y; centro.y = c.y; }
+    raio = Math.min(raio, 0.14);
+    aplicarMateriais(); aplicarVisibilidade(); atualizarPoros(); redimensionar(); sincronizarControles(); enquadrar(CONFIG.vistaInicial);
+    window.__bancada = { pecas, est, cena, camera, controles, T, THREE, renderer, gtao, contorno, uRelevoMusc, fps: () => fps,
+      medir: (n, w, h) => { renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); compositor.setSize(w, h); aoLeve(w, h);
+        const g = renderer.getContext(), px = new Uint8Array(4); compositor.render(); g.readPixels(0, 0, 1, 1, g.RGBA, g.UNSIGNED_BYTE, px);
+        const t = performance.now(); for (let i = 0; i < n; i++) { compositor.render(); g.readPixels(0, 0, 1, 1, g.RGBA, g.UNSIGNED_BYTE, px); }
+        return (performance.now() - t) / n; } };  // só para o teste automático ler o estado
+    document.getElementById('carregando').hidden = true;
+    if (SECAO) await iniciarSecao();
+    laco();
+  } catch (e) {
+    document.getElementById('carregando').textContent = 'Não carregou o joelho: ' + (e && e.message ? e.message : e);
+  }
+})();
+
+// ------------------------------------------------------------------ controles da bancada
+function marcar(seletor, ativo) { document.querySelectorAll(seletor).forEach((b) => b.setAttribute('aria-pressed', String(ativo(b)))); }
+document.querySelectorAll('.forma').forEach((b) => b.onclick = () => escolherForma(b.dataset.f));
+document.getElementById('m-hoje').onclick = () => { est.material = 'hoje'; marcar('#m-hoje,#m-novo', (b) => b.id === 'm-hoje'); aplicarMateriais(); selo(); };
+document.getElementById('m-novo').onclick = () => { est.material = 'novo'; marcar('#m-hoje,#m-novo', (b) => b.id === 'm-novo'); aplicarMateriais(); selo(); };
+document.querySelectorAll('.camada').forEach((b) => b.onclick = () => { const c = b.dataset.camada; est.camadas[c] = !est.camadas[c]; b.setAttribute('aria-pressed', String(est.camadas[c])); aplicarVisibilidade(); });
+document.querySelectorAll('.vista').forEach((b) => b.onclick = () => enquadrar(b.dataset.vista));
+document.querySelectorAll('.var-osso').forEach((b) => b.onclick = () => { est.varOsso = +b.dataset.v; marcar('.var-osso', (x) => x === b); aplicarMateriais(); });
+document.querySelectorAll('.contraste').forEach((b) => b.onclick = () => { est.contraste = b.dataset.c; marcar('.contraste', (x) => x === b); aplicarContraste(); });
+const rUmido = document.getElementById('r-umido');
+function atualizarUmido() { uUmido.value = est.umido; document.getElementById('v-umido').textContent = Math.round(est.umido * 100) + '%'; }
+rUmido.oninput = () => { est.umido = +rUmido.value; atualizarUmido(); };
+atualizarUmido();
+const rVidro = document.getElementById('r-vidro');
+function atualizarVidro() { uVidro.value = est.vidro; document.getElementById('v-vidro').textContent = Math.round(est.vidro * 100) + '%'; }
+rVidro.oninput = () => { est.vidro = +rVidro.value; atualizarVidro(); };
+atualizarVidro();
+function aplicarOpaco() {
+  uOpaco.value = est.musculoOpaco ? 1 : 0;
+  const mats = new Set([HOJE.musculo]);
+  for (const v of FORMAS) for (const o of pecas[v]) if (o.userData.mMusc) mats.add(o.userData.mMusc);
+  for (const v of FORMAS) for (const o of pecas[v]) if (o.userData.mTex && o.userData.classe === 'musculo') {
+    const t = o.userData.mTex; t.transparent = !est.musculoOpaco; t.opacity = est.musculoOpaco ? 1 : 0.35; t.depthWrite = est.musculoOpaco; t.needsUpdate = true; }
+  for (const m of mats) { m.transparent = !est.musculoOpaco; m.depthWrite = est.musculoOpaco; m.needsUpdate = true; }
+  HOJE.musculo.opacity = est.musculoOpaco ? 1 : 0.3;
+  document.getElementById('r-vidro').disabled = est.musculoOpaco;
+}
+document.getElementById('b-opaco').onclick = (ev) => { est.musculoOpaco = !est.musculoOpaco; ev.currentTarget.setAttribute('aria-pressed', String(est.musculoOpaco)); aplicarOpaco(); };
+document.getElementById('b-rotulos').onclick = (ev) => { est.rotulos = !est.rotulos; ev.currentTarget.setAttribute('aria-pressed', String(est.rotulos)); };
+document.getElementById('b-ao').onclick = (ev) => { est.ao = !est.ao; ev.currentTarget.setAttribute('aria-pressed', String(est.ao)); gtao.enabled = est.ao; };
+document.getElementById('b-estudio').onclick = (ev) => { est.estudio = !est.estudio; ev.currentTarget.setAttribute('aria-pressed', String(est.estudio)); aplicarLuz(); };
+document.getElementById('b-selecao').onclick = (ev) => { est.selecao = !est.selecao; ev.currentTarget.setAttribute('aria-pressed', String(est.selecao)); aplicarMateriais(); };
+document.getElementById('b-comparar').onclick = (ev) => { est.comparar = !est.comparar; ev.currentTarget.setAttribute('aria-pressed', String(est.comparar)); document.getElementById('palco').classList.toggle('comparar', est.comparar); setTimeout(redimensionar, 30); };
+for (const k of ['forca', 'tamanho', 'faixa', 'transicao', 'fora']) document.getElementById('r-' + k).oninput = (ev) => { est.poros[k] = +ev.target.value; atualizarPoros(); };
+const NOME_FORMA = Object.fromEntries(CONFIG.formas.map((f) => [f.id, f.nome]));
+function selo() { document.getElementById('selo').textContent = `Forma ${NOME_FORMA[est.forma]} · material ${est.material === 'hoje' ? 'de hoje' : 'novo'}`; }
+selo();
+
+function sincronizarControles() {   // botões, controles e cena a partir do estado
+  marcar('.forma', (b) => b.dataset.f === est.forma); garantirForma(est.forma).then(() => { aplicarVisibilidade(); selo(); });
+  marcar('#m-hoje,#m-novo', (b) => b.id === (est.material === 'hoje' ? 'm-hoje' : 'm-novo'));
+  marcar('.camada', (b) => !!est.camadas[b.dataset.camada]);
+  marcar('.var-osso', (b) => +b.dataset.v === est.varOsso);
+  marcar('.contraste', (b) => b.dataset.c === est.contraste);
+  for (const [id, v] of [['b-ao', est.ao], ['b-estudio', est.estudio], ['b-selecao', est.selecao], ['b-comparar', est.comparar], ['b-opaco', est.musculoOpaco], ['b-rotulos', est.rotulos]])
+    document.getElementById(id).setAttribute('aria-pressed', String(v));
+  gtao.enabled = est.ao;
+  document.getElementById('palco').classList.toggle('comparar', est.comparar);
+  rUmido.value = est.umido; rVidro.value = est.vidro;
+  for (const k of ['forca', 'tamanho', 'faixa', 'transicao', 'fora']) document.getElementById('r-' + k).value = est.poros[k];
+  aplicarLuz(); aplicarContraste(); atualizarUmido(); atualizarVidro(); atualizarPoros(); aplicarOpaco();
+  aplicarMateriais(); aplicarVisibilidade(); selo(); setTimeout(redimensionar, 30);
+}
+function restaurar() {
+  const p = JSON.parse(JSON.stringify(PADRAO));
+  for (const k of Object.keys(p)) est[k] = p[k];
+  sincronizarControles(); enquadrar(CONFIG.vistaInicial);
+  const aviso = document.getElementById('restaurado'); aviso.textContent = 'Voltou ao padrão.';
+  clearTimeout(restaurar.t); restaurar.t = setTimeout(() => { aviso.textContent = ''; }, 2500);
+}
+document.getElementById('restaurar').onclick = restaurar;
+
+// ------------------------------------------------------------------ avaliação (regra 9): por pessoa, salva sozinha
+const ITENS = [
+  { id: 'forma', titulo: 'Forma: melhor de cada', pergunta: 'A forma nova (ligamentos, meniscos, ossos e cartilagem do Open3Dmodel; músculos nossos) ficou melhor que a Refinada? Compare pelos botões de Forma.' },
+  { id: 'osso', titulo: 'Osso', pergunta: 'Qual combinação chegou mais perto da sua imagem?', opcoes: ['1', '2', '3', '4', '5'] },
+  { id: 'cartilagem', titulo: 'Cartilagem e menisco', pergunta: 'O branco azulado com brilho ficou como você imaginou?' },
+  { id: 'ligamento', titulo: 'Ligamento e tendão', pergunta: 'A fibra e o brilho prateado ficaram bons?' },
+  { id: 'musculo', titulo: 'Músculo em vidro e úmido', pergunta: 'O vidro com a borda mais forte e o brilho úmido ficaram bons? Teste o controle de umidade.' },
+  { id: 'selecao', titulo: 'Seleção', pergunta: 'O azul da seleção ficou como na sua imagem?' },
+  { id: 'acabamento', titulo: 'Sombra, luz e contraste', pergunta: 'A sombra de contato e a luz de estúdio ajudaram? Qual contraste ficou mais perto da sua imagem? Compare pelos botões.' },
+];
+const RESP = ['Aprovado', 'Quase: ajustar', 'Não serve'];
+const caixaAval = document.getElementById('avaliacao');
+caixaAval.innerHTML = ITENS.map((it) => `
+<section class="item" id="i-${it.id}">
+<h3>${it.titulo}</h3>
+<p class="nota">${it.pergunta}</p>
+<div class="linha-chips" role="group" aria-label="${it.titulo}">
+${(it.opcoes ? it.opcoes.map((o) => `Combinação ${o}`) : RESP).map((r, k) => `<button type="button" class="chip resp${k === 0 && !it.opcoes ? ' bom' : ''}" data-item="${it.id}" data-valor="${r}" aria-pressed="false">${r}</button>`).join('')}
+</div>
+<label class="nota" for="t-${it.id}">O que ajustar</label>
+<textarea id="t-${it.id}" data-item="${it.id}" rows="3"></textarea>
+</section>`).join('');
+
+const av = { pessoa: null, respostas: {} };
+let db = null; const timers = {};
+// nada guardado no aparelho (site, 13/10): a conformidade do site mede zero armazenamento local no dist/, e o painel
+// que lembrava a escala da letra e a pessoa da avaliação não aparece no modo seção
+function guarda() {}
+function le(k, d) { return d; }
+let escala = le('jt-escala', 1);
+const aplicaEscala = () => document.documentElement.style.setProperty('--escala', escala);
+aplicaEscala();
+document.getElementById('menor').onclick = () => { escala = Math.max(0.85, +(escala - 0.1).toFixed(2)); aplicaEscala(); guarda('jt-escala', escala); };
+document.getElementById('maior').onclick = () => { escala = Math.min(1.6, +(escala + 0.1).toFixed(2)); aplicaEscala(); guarda('jt-escala', escala); };
+const status = (t) => { document.getElementById('salvo').textContent = t; };
+const hora = () => { const d = new Date(); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); };
+function pintaAval() {
+  document.querySelectorAll('.pessoa').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pessoa === av.pessoa)));
+  document.querySelectorAll('.resp').forEach((b) => { const r = av.respostas[b.dataset.item] || {}; b.setAttribute('aria-pressed', String(r.valor === b.dataset.valor)); });
+  document.querySelectorAll('textarea[data-item]').forEach((t) => { if (document.activeElement !== t) t.value = (av.respostas[t.dataset.item] || {}).texto || ''; });
+}
+function salvaItem(item) {
+  if (!av.pessoa) { status('Escolha quem está avaliando para salvar.'); return; }
+  guarda('jt-rasc-' + av.pessoa, av.respostas);
+  clearTimeout(timers[item]);
+  timers[item] = setTimeout(() => {
+    if (!db) { status('Guardado neste aparelho (sem conexão com a página).'); return; }
+    const r = av.respostas[item] || {};
+    db.doc('respostas/' + av.pessoa + '-' + item).set({ pessoa: av.pessoa, item, valor: r.valor || '', texto: r.texto || '',
+      contexto: { forma: est.forma, material: est.material, varOsso: est.varOsso, ao: est.ao, estudio: est.estudio, contraste: est.contraste, vidro: est.vidro, umido: est.umido, musculoOpaco: est.musculoOpaco, rotulos: est.rotulos, poros: Object.assign({}, est.poros) }, atualizado_em: new Date().toISOString() })
+      .then(() => status('Salvo às ' + hora() + '.')).catch(() => status('Não salvou agora; ficou guardado neste aparelho.'));
+  }, 700);
+}
+function escolhePessoa(p) {
+  av.pessoa = p; guarda('jt-pessoa', p); av.respostas = le('jt-rasc-' + p, {}); pintaAval();
+  status('Avaliando como ' + (p === 'ana' ? 'Ana' : 'Guilherme') + '.');
+  if (db) db.collection('respostas').where('pessoa', '==', p).get().then((s) => { s.docs.forEach((d) => { const v = d.data(); if (v && v.item) av.respostas[v.item] = { valor: v.valor, texto: v.texto }; }); pintaAval(); }).catch(() => {});
+}
+document.querySelectorAll('.pessoa').forEach((b) => b.onclick = () => escolhePessoa(b.dataset.pessoa));
+caixaAval.addEventListener('click', (ev) => {
+  const b = ev.target.closest('.resp'); if (!b) return;
+  if (!av.pessoa) { status('Escolha quem está avaliando antes de marcar.'); return; }
+  const r = av.respostas[b.dataset.item] || (av.respostas[b.dataset.item] = {});
+  r.valor = r.valor === b.dataset.valor ? '' : b.dataset.valor; pintaAval(); salvaItem(b.dataset.item);
+});
+caixaAval.addEventListener('input', (ev) => {
+  const t = ev.target.closest('textarea[data-item]'); if (!t) return;
+  if (!av.pessoa) { status('Escolha quem está avaliando antes de escrever.'); return; }
+  (av.respostas[t.dataset.item] || (av.respostas[t.dataset.item] = {})).texto = t.value; salvaItem(t.dataset.item);
+});
+document.getElementById('concluir').onclick = () => {
+  const fim = document.getElementById('fimtxt');
+  if (!av.pessoa) { status('Escolha quem está avaliando.'); return; }
+  if (!db) { fim.textContent = 'Sem conexão com a página: tente de novo em instantes.'; return; }
+  db.doc('status/' + av.pessoa).set({ pessoa: av.pessoa, concluido: true, em: new Date().toISOString() })
+    .then(() => { fim.textContent = 'Anotado às ' + hora() + '.'; }).catch(() => { fim.textContent = 'Não salvou agora; tente de novo.'; });
+};
+const p0 = le('jt-pessoa', null); if (p0) escolhePessoa(p0); else pintaAval();
+if (window.claude && typeof window.claude.use === 'function') {
+  window.claude.use('db').then((d) => { db = d; if (!db) status('Sem conexão com a página: as marcas ficam neste aparelho.'); else if (av.pessoa) escolhePessoa(av.pessoa); });
+} else { status('Sem conexão com a página: as marcas ficam neste aparelho.'); }
+</script>
+</body></html>

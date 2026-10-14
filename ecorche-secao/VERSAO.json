@@ -1,0 +1,633 @@
+{
+ "o_que_e": "Palco 3D da seção Onde dói de /servicos: o écorché da réplica da conversa de ideias (piloto ecorche-piloto-joelho)",
+ "piloto": {
+  "pasta": "C:\\Users\\guilh\\projetos\\ecorche-piloto-joelho",
+  "commit": "8b86c5c",
+  "data_do_commit": "2026-10-13T19:25:33-03:00",
+  "replica": "piloto/replica-servicos/secao/ecorche-secao",
+  "posteres": "piloto/posteres-secao"
+ },
+ "three": {
+  "versao": "0.180.0",
+  "integridade": "sha512-o+qycAMZrh+TsE01GqWUxUIKR1AL0S8pq7zDkYOQw8GqfX8b8VoCKYUoHbhiX5j+7hr8XsuHDVU6+gkQJQKg9w=="
+ },
+ "copiado_em": "2026-10-14T04:26:58.087Z",
+ "trocas": [
+  "modelos e luz em binário puro",
+  "three.js do próprio site, sem fonte do Google",
+  "sem a imagem de conceito do painel",
+  "pausa fora da tela",
+  "quieto: sem redesenho com tudo parado",
+  "créditos no HTML da seção e pôsteres tirados aqui, sem a linha pintada",
+  "nada guardado no aparelho",
+  "chegada no ponto e aviso no-ponto",
+  "compilar sem travar a página (aquecimento assíncrono com compileAsync)",
+  "um desenho por material (as peças num lote por material, BatchedMesh)",
+  "o quadro sem trabalho repetido (realce numa passada, fantasma com verso e frente num desenho, sem rótulos no modo seção, matrizes paradas)"
+ ],
+ "posteres": [
+  {
+   "posicao": 0,
+   "largura": 1080,
+   "altura": 1080,
+   "menor": 640
+  },
+  {
+   "posicao": 1,
+   "largura": 1080,
+   "altura": 1080,
+   "menor": 640
+  },
+  {
+   "posicao": 2,
+   "largura": 1080,
+   "altura": 1080,
+   "menor": 640
+  },
+  {
+   "posicao": 3,
+   "largura": 1080,
+   "altura": 1080,
+   "menor": 640
+  },
+  {
+   "posicao": 4,
+   "largura": 1080,
+   "altura": 1080,
+   "menor": 640
+  },
+  {
+   "posicao": 5,
+   "largura": 1080,
+   "altura": 1080,
+   "menor": 640
+  },
+  {
+   "posicao": 6,
+   "largura": 1080,
+   "altura": 1080,
+   "menor": 640
+  }
+ ],
+ "arquivos": {
+  "corpo.htm": {
+   "sha256": "45804cc2ee1cd5c71cb559ff537fd2b2e17a947db12b36afc4fed83b99b2b915",
+   "bytes": 125494,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/index.html",
+    "sha256": "d1165454a41a48be0118b2c88bdd7dddc98c0627d2b8bf1500bd423fac4bc1bb"
+   }
+  },
+  "corpo-tronco.mo.glb": {
+   "sha256": "933740e83d099b538783f2032445dff621b5dd5d20032a7fa782006660b7f3cb",
+   "bytes": 5365468,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-tronco.mo.glb.json",
+    "sha256": "5efd97c168c3090f41a10a049ac103907edd1b0d1bcb8741d107a4702acab28e"
+   }
+  },
+  "corpo-cabeca.mo.glb": {
+   "sha256": "663dce67d78b1ca2ebab9dff53699c6a1f6f05dc4c44b98a1a351c533b7ba927",
+   "bytes": 2235616,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-cabeca.mo.glb.json",
+    "sha256": "d43e11fdc3e9de517820506de335a06bf0787b8debe67950c42cd5075b49e327"
+   }
+  },
+  "corpo-perna-d.mo.glb": {
+   "sha256": "a5f1c8f3129a7ca491290d646a6593987806b0bfc6d5fcdd573b19db8f9e4fb7",
+   "bytes": 4688852,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-perna-d.mo.glb.json",
+    "sha256": "2c3a3a4b8d8f6461fb3fed681a1ec0b371f3af79fa6732d3fd3cf6026fec6c5a"
+   }
+  },
+  "corpo-perna-e.mo.glb": {
+   "sha256": "052b78dde68fd64ab05bb131ed7ad4aa7409727b5c4fa2e3cdc0620aee327c70",
+   "bytes": 4693116,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-perna-e.mo.glb.json",
+    "sha256": "2016f6fc920d81d0d9cb3e5a0511f4780f7ed34a92bcc70f5d0289aaf600e009"
+   }
+  },
+  "corpo-braco-d.mo.glb": {
+   "sha256": "7d6f28047d6cbab43748519fd1c71c02ddf8b625a5cf30485793526d8c16728e",
+   "bytes": 2442500,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-braco-d.mo.glb.json",
+    "sha256": "1c9ce7b44e2a3c51f2e8f0f28fa0fbd8a97a50cff8bc8c5515d81bc07b1e3334"
+   }
+  },
+  "corpo-braco-e.mo.glb": {
+   "sha256": "58a56a7edf11b02b00058205aa531cc3b00ab21d42454a69c40241f8689b9cd3",
+   "bytes": 2440980,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-braco-e.mo.glb.json",
+    "sha256": "adfa57a0a2e4e4a03fc46158f4d79016262e0f133b7ce5b5cf3d69a3f130c8e5"
+   }
+  },
+  "corpo-pele.mo.glb": {
+   "sha256": "734eb1739bb1cf76adc3340dbdb04dee2bd97eb20bbcd54553ad199c19ae0ea0",
+   "bytes": 572800,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-pele.mo.glb.json",
+    "sha256": "a0cdbc15d1a56ed6d2fa1cffbc4b035d09eb87e60d900732f73bf693a92015b9"
+   }
+  },
+  "corpo-tronco.leve.mo.glb": {
+   "sha256": "82304817740778490d40e8c7741b46d0ad72471e016f39420dd4732eff7f363c",
+   "bytes": 2362312,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-tronco.leve.mo.glb.json",
+    "sha256": "15055e680440541bed56f87a9a4739c4866de6dc6324277212f2f9230b705f3e"
+   }
+  },
+  "corpo-perna-d.leve.mo.glb": {
+   "sha256": "dab33eca7dbb79c57d0a522d357e995abb0a03af94313df0b50d537179029aef",
+   "bytes": 2089500,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-perna-d.leve.mo.glb.json",
+    "sha256": "bc56407ed7711a44ac8123b3aadb821a2f9ffc704f95730cb49fcec828e0b2b4"
+   }
+  },
+  "corpo-perna-e.leve.mo.glb": {
+   "sha256": "9b57e55472c0507e0b23a4c004e8f77f36b73e8ce4e1dc64c75c2d1fea3e2170",
+   "bytes": 2094656,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-perna-e.leve.mo.glb.json",
+    "sha256": "c4669b0a2b5998abcc100f5adb961a56614c6b24360b06f5b42283df3b6912b2"
+   }
+  },
+  "corpo-braco-d.leve.mo.glb": {
+   "sha256": "8675ea1b8b9b5e8aef9d212170779eb73dc13ce53ca637361100ec1eec09161a",
+   "bytes": 1102136,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-braco-d.leve.mo.glb.json",
+    "sha256": "cb08597d43aa350f32286d7b8eb2c6849f6eaf0dff25506aca691ce6f6f8a042"
+   }
+  },
+  "corpo-braco-e.leve.mo.glb": {
+   "sha256": "affcef6ab335ec50d58c3e6d0743a37bced27c27f61342e1f2a6f15ff6381017",
+   "bytes": 1101792,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/corpo-braco-e.leve.mo.glb.json",
+    "sha256": "7dbdcd89c9f14d0a79417918ff155778705b319fc2b5dc39b45611d2a1d9fc14"
+   }
+  },
+  "tex/Ivory001A-cor.jpg": {
+   "sha256": "7801d218770e3edafe24b92291f62b8f019242166e8aeb58412e88be4aa6b989",
+   "bytes": 35080,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Ivory001A-cor.jpg",
+    "sha256": "7801d218770e3edafe24b92291f62b8f019242166e8aeb58412e88be4aa6b989"
+   }
+  },
+  "tex/Ivory001A-normal.jpg": {
+   "sha256": "8d14ae3cb36fe208702a9b0d06037d001aa8d5ae75c66909792e67f38011f963",
+   "bytes": 19177,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Ivory001A-normal.jpg",
+    "sha256": "8d14ae3cb36fe208702a9b0d06037d001aa8d5ae75c66909792e67f38011f963"
+   }
+  },
+  "tex/Ivory001A-rugosidade.jpg": {
+   "sha256": "963d8b77a57b3ccc06d545d0189cfc61cd1c4f240b7b6310af6d6f47666354a3",
+   "bytes": 64259,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Ivory001A-rugosidade.jpg",
+    "sha256": "963d8b77a57b3ccc06d545d0189cfc61cd1c4f240b7b6310af6d6f47666354a3"
+   }
+  },
+  "tex/Ivory002A-cor.jpg": {
+   "sha256": "c0895e57e25081d4c115533078e51c82942b049d231e5b53eb89c29cce8c3c6a",
+   "bytes": 31355,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Ivory002A-cor.jpg",
+    "sha256": "c0895e57e25081d4c115533078e51c82942b049d231e5b53eb89c29cce8c3c6a"
+   }
+  },
+  "tex/Ivory002A-normal.jpg": {
+   "sha256": "32094e0671b1779c48322748d3d9bb87e92a41ecda3069f04cd350b604e9a03b",
+   "bytes": 18963,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Ivory002A-normal.jpg",
+    "sha256": "32094e0671b1779c48322748d3d9bb87e92a41ecda3069f04cd350b604e9a03b"
+   }
+  },
+  "tex/Ivory002A-rugosidade.jpg": {
+   "sha256": "d7a439d6dd76022741b4d8e1bc6f93d42a6eb1adac43362bf0378e1ae75a82db",
+   "bytes": 62760,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Ivory002A-rugosidade.jpg",
+    "sha256": "d7a439d6dd76022741b4d8e1bc6f93d42a6eb1adac43362bf0378e1ae75a82db"
+   }
+  },
+  "tex/Sponge001-cor.jpg": {
+   "sha256": "b123f801764d316c9f56adc5c2be27ec617c2ffc4ac3a9e8db2f498b810c6527",
+   "bytes": 193013,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Sponge001-cor.jpg",
+    "sha256": "b123f801764d316c9f56adc5c2be27ec617c2ffc4ac3a9e8db2f498b810c6527"
+   }
+  },
+  "tex/Sponge001-normal.jpg": {
+   "sha256": "5fb4f568443aa1c5ac3e707c136ba083da597edb862abecd99aff374bc4c0f95",
+   "bytes": 651925,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Sponge001-normal.jpg",
+    "sha256": "5fb4f568443aa1c5ac3e707c136ba083da597edb862abecd99aff374bc4c0f95"
+   }
+  },
+  "tex/Sponge001-rugosidade.jpg": {
+   "sha256": "25b7dfbb80ec9308a58cb47d1d9d1841686f9caf754b9e38e6784b44e266ebb0",
+   "bytes": 160185,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Sponge001-rugosidade.jpg",
+    "sha256": "25b7dfbb80ec9308a58cb47d1d9d1841686f9caf754b9e38e6784b44e266ebb0"
+   }
+  },
+  "tex/studio_small_08_1k.hdr": {
+   "sha256": "f6a989f89432eb4eee3191364a9c1ceed195c4ec3544173a3c04fd96cb91d0ba",
+   "bytes": 1508872,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/studio_small_08_1k.hdr.json",
+    "sha256": "737c2b5cd6f5caef638601a5cbac57705c8a4bcd456b4d061b3d842e8f868f53"
+   }
+  },
+  "tex-principal/lujan-m00-cor.jpg": {
+   "sha256": "dc3645dc0334556c48368290277ee8c5213c3013f863192c007c8c64e0e28e03",
+   "bytes": 137755,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m00-cor.jpg",
+    "sha256": "dc3645dc0334556c48368290277ee8c5213c3013f863192c007c8c64e0e28e03"
+   }
+  },
+  "tex-principal/lujan-m00-relevo.jpg": {
+   "sha256": "312c85c4629ebc45104de5765e15ea1bf42b7a026c7e2dd0181c3eb914bd0186",
+   "bytes": 111396,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m00-relevo.jpg",
+    "sha256": "312c85c4629ebc45104de5765e15ea1bf42b7a026c7e2dd0181c3eb914bd0186"
+   }
+  },
+  "tex-principal/lujan-m05-cor.jpg": {
+   "sha256": "058e03a329df10646143e3d75c487d42f495c6d0b9d20bef657c916258a2dc77",
+   "bytes": 129129,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m05-cor.jpg",
+    "sha256": "058e03a329df10646143e3d75c487d42f495c6d0b9d20bef657c916258a2dc77"
+   }
+  },
+  "tex-principal/lujan-m05-relevo.jpg": {
+   "sha256": "79ce0a61814f816adba6641a48b3ffaa7695f2a7e2b5f214bf0fa8b786c3e43e",
+   "bytes": 94871,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m05-relevo.jpg",
+    "sha256": "79ce0a61814f816adba6641a48b3ffaa7695f2a7e2b5f214bf0fa8b786c3e43e"
+   }
+  },
+  "tex-principal/lujan-m07-cor.jpg": {
+   "sha256": "814ce4331692dcd28b5de06ca5df9a644f9144fd1ca6c13c562e7bb5fdf0d450",
+   "bytes": 156961,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m07-cor.jpg",
+    "sha256": "814ce4331692dcd28b5de06ca5df9a644f9144fd1ca6c13c562e7bb5fdf0d450"
+   }
+  },
+  "tex-principal/lujan-m07-relevo.jpg": {
+   "sha256": "7068c9d1da6d8081c45c27c97bc5a805efaae8c440805794af575f9b61d80975",
+   "bytes": 85257,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m07-relevo.jpg",
+    "sha256": "7068c9d1da6d8081c45c27c97bc5a805efaae8c440805794af575f9b61d80975"
+   }
+  },
+  "tex-principal/lujan-m09-cor.jpg": {
+   "sha256": "b0a7cda914b01b73349c1fb09d0becb61689a6a1fb2ffe91ade01cf5aa279fd2",
+   "bytes": 154008,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m09-cor.jpg",
+    "sha256": "b0a7cda914b01b73349c1fb09d0becb61689a6a1fb2ffe91ade01cf5aa279fd2"
+   }
+  },
+  "tex-principal/lujan-m09-relevo.jpg": {
+   "sha256": "f0d711459d6df7755beec780fe2bd180eda33bc1fe5e03a284492bd387096fde",
+   "bytes": 95716,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m09-relevo.jpg",
+    "sha256": "f0d711459d6df7755beec780fe2bd180eda33bc1fe5e03a284492bd387096fde"
+   }
+  },
+  "tex-principal/lujan-m10-cor.jpg": {
+   "sha256": "6e87d8227fa4cb4ec995dd495b2aa4d9421ff704e48f1090970fa26b2d7a1dbb",
+   "bytes": 162089,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m10-cor.jpg",
+    "sha256": "6e87d8227fa4cb4ec995dd495b2aa4d9421ff704e48f1090970fa26b2d7a1dbb"
+   }
+  },
+  "tex-principal/lujan-m10-relevo.jpg": {
+   "sha256": "b837eea8cd03348707318e7f0e69f3f5d3614058b29c21e7cdc973b9ef8d91cf",
+   "bytes": 105527,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m10-relevo.jpg",
+    "sha256": "b837eea8cd03348707318e7f0e69f3f5d3614058b29c21e7cdc973b9ef8d91cf"
+   }
+  },
+  "tex-principal/lujan-m14-cor.jpg": {
+   "sha256": "478f1324577d65051495ad7db784f42676ac221d662cd122bd50ff12a5ff08b6",
+   "bytes": 131512,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m14-cor.jpg",
+    "sha256": "478f1324577d65051495ad7db784f42676ac221d662cd122bd50ff12a5ff08b6"
+   }
+  },
+  "tex-principal/lujan-m14-relevo.jpg": {
+   "sha256": "3f5c40489752a97f95f2fa9302eee95b3188a3abd84211fe8e78e224c0324d10",
+   "bytes": 119968,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m14-relevo.jpg",
+    "sha256": "3f5c40489752a97f95f2fa9302eee95b3188a3abd84211fe8e78e224c0324d10"
+   }
+  },
+  "tex-principal/olho-deguider-relevo.jpg": {
+   "sha256": "b59aa5c542e78e1aaa11b5363c60b3085590795a54984fd6548cdbfbbc421983",
+   "bytes": 52549,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/olho-deguider-relevo.jpg",
+    "sha256": "b59aa5c542e78e1aaa11b5363c60b3085590795a54984fd6548cdbfbbc421983"
+   }
+  },
+  "tex-principal/olho-deguider.jpg": {
+   "sha256": "9a2127515e72cde48db50cb0d75d49b8e29ed8d27560c69541dc9142089c6c3a",
+   "bytes": 87884,
+   "origem": {
+    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/olho-deguider.jpg",
+    "sha256": "9a2127515e72cde48db50cb0d75d49b8e29ed8d27560c69541dc9142089c6c3a"
+   }
+  },
+  "three/three.module.min.js": {
+   "sha256": "e2b5ee6bccd38fd6d8a2428546b83c5f2426d84b152ef82be8055556e3b40eb6",
+   "bytes": 338908
+  },
+  "three/three.core.min.js": {
+   "sha256": "61ba0df005b05991361d040d8ff670e1aadfd0ce7aeebd1fdb0725957a8957de",
+   "bytes": 381124
+  },
+  "three/addons/controls/OrbitControls.js": {
+   "sha256": "b97879c748170baadeb3fb84cea1ffdf4674e283dc06042f34e2acb95a76042c",
+   "bytes": 38703
+  },
+  "three/addons/environments/RoomEnvironment.js": {
+   "sha256": "c20f0b4677f6128a138d7152b85cbef9091f4f45cdfa05adca04d40c1697c7ae",
+   "bytes": 4899
+  },
+  "three/addons/libs/meshopt_decoder.module.js": {
+   "sha256": "784315b6959c85459eab77f51776158cc381d7e7d77b919ff7c4935f088a7c5c",
+   "bytes": 24848
+  },
+  "three/addons/loaders/GLTFLoader.js": {
+   "sha256": "67ac5551fdafa6e349bd80c8f8e5e39c136d6b2fb1ad647db9abb21dc86f9e4a",
+   "bytes": 114739
+  },
+  "three/addons/loaders/HDRLoader.js": {
+   "sha256": "d7053cfc4019f520335ae07e0fe82b4ef5a66b6766e8b253d066616184995e89",
+   "bytes": 12456
+  },
+  "three/addons/loaders/RGBELoader.js": {
+   "sha256": "6c08f9c441040a61a188ad7711078da4df48f8c5ac3b3725dd6f10ac9ff81162",
+   "bytes": 268
+  },
+  "three/addons/math/SimplexNoise.js": {
+   "sha256": "dd1f3c42c1bc9fa1b76c1c0796d352521accf0a3a95cc7d0caf479abc5a444a2",
+   "bytes": 15154
+  },
+  "three/addons/postprocessing/EffectComposer.js": {
+   "sha256": "4b8c855f28eed2570bed898adc0ab89c585a8a281ecb6d905c09d00697f9f50a",
+   "bytes": 8477
+  },
+  "three/addons/postprocessing/GTAOPass.js": {
+   "sha256": "855fd7953e81c1050a4abea8af4bfeb5ad9b6d879f793a9c650e3768aaec62a3",
+   "bytes": 19890
+  },
+  "three/addons/postprocessing/MaskPass.js": {
+   "sha256": "7cd08eee9d5d6f5578beaddbdcbe9c384f6873810af27f22ab7db3ceeb127aa3",
+   "bytes": 4694
+  },
+  "three/addons/postprocessing/OutlinePass.js": {
+   "sha256": "c8a82d251b651fad0317f52663e0f5370998bab20a88a29da5d8702cc2db86d6",
+   "bytes": 23172
+  },
+  "three/addons/postprocessing/OutputPass.js": {
+   "sha256": "f5b81c96e76b6b28b4b3ba8c41c4aeb982b1e03f3d82883242d951b2ab082fa2",
+   "bytes": 4029
+  },
+  "three/addons/postprocessing/Pass.js": {
+   "sha256": "444b409c235ead986893c472e720da1b779a56985c7d10b279c7944b52bd61c5",
+   "bytes": 4218
+  },
+  "three/addons/postprocessing/RenderPass.js": {
+   "sha256": "fd91229aacc5830e3984b0f2bdefcf566163ea028f4c1f1ab233fa6665a133ac",
+   "bytes": 4112
+  },
+  "three/addons/postprocessing/ShaderPass.js": {
+   "sha256": "e2500a5913b26bbf5148ceaae644c6edcff06a18b01494ee37bf856353d2ab9d",
+   "bytes": 3228
+  },
+  "three/addons/shaders/CopyShader.js": {
+   "sha256": "a33057d5ac91c43304c186ac0e8816e62bb2ed471d3a00ff3018dfd5c0389718",
+   "bytes": 729
+  },
+  "three/addons/shaders/GTAOShader.js": {
+   "sha256": "d4b06ed5bbb7a177be6b0030986916f6f085721e2745e4632ab1773d02ca743c",
+   "bytes": 11910
+  },
+  "three/addons/shaders/OutputShader.js": {
+   "sha256": "353479f77a8d7e2629d49ccac9fc2f5dbfdda5442e0adf867b00377a2fcb0cb2",
+   "bytes": 1876
+  },
+  "three/addons/shaders/PoissonDenoiseShader.js": {
+   "sha256": "e01b574599d31ae3b9f08c6112da72c06bbd536ccbde094fd46e4bebe579e473",
+   "bytes": 6945
+  },
+  "three/addons/utils/BufferGeometryUtils.js": {
+   "sha256": "fda7e946b8e0b5ab39b779206589e7a1079a22eb24efb89d7223e03fdfb1f751",
+   "bytes": 35539
+  },
+  "three/LICENSE": {
+   "sha256": "bfe119ea4fd413f5f7ca3fcd63adb0c4a073ed39daa2fe7d3e6b769e21272601",
+   "bytes": 1081
+  },
+  "posteres/poster-0.webp": {
+   "sha256": "880f2ac29c3bb6e6e762bf7601644e52312ca5314bfe97cb5e13801094d21392",
+   "bytes": 23384,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-0.avif": {
+   "sha256": "96a29633bf42af33ea14821bfa58df51bf71bbfa947d6119996015616948f72f",
+   "bytes": 19475,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-0-640.avif": {
+   "sha256": "aa215111d73218b7d16e95c10232c583fd7c6262eea67d5c419aa6c73179027b",
+   "bytes": 8885,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-1.webp": {
+   "sha256": "1d28593df2ffad742c412e7637ab6eff2b83c575174a034782b9a4f235cc2fff",
+   "bytes": 42378,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-1.avif": {
+   "sha256": "09496d7ffc45005c420ebfbfe436dcdc4bcdd9ea0dcbbd4e0179c391f3e86eac",
+   "bytes": 33162,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-1-640.avif": {
+   "sha256": "8a0e7898da61bab228f5c289d0f7038b27ca07b3d823bb27aadf4d66efe3eef8",
+   "bytes": 16865,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-2.webp": {
+   "sha256": "b61fb1c354276380a692fd561bfcc3b4a4a829d169ff3304ffe402bfe79bfc04",
+   "bytes": 44122,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-2.avif": {
+   "sha256": "38935830fcbff48267b87df2c866e76f7d611ff34bef4732e4e6abb7bd3f3e0a",
+   "bytes": 35509,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-2-640.avif": {
+   "sha256": "836ddb358f9bbace6d7fa09c910987f39d3d8fa345240ba32b15ce4af9493764",
+   "bytes": 17609,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-3.webp": {
+   "sha256": "16b7ff7f4045dc12ee489a1e6da397c859aabcf1ca9b6c99de15ee376d61a0a5",
+   "bytes": 60920,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-3.avif": {
+   "sha256": "67ce6a41670c6517e05753c77bb62cb45872c8bf79cef51383c4ff34151f902d",
+   "bytes": 48887,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-3-640.avif": {
+   "sha256": "1636aab8c2b773b144e01144dd47ea47412cb062c44e5880fa46c3052adfafb2",
+   "bytes": 23394,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-4.webp": {
+   "sha256": "79945f9244b3adadddaa85ddb545755a923bb74f164f2356c8d2a370e1280f49",
+   "bytes": 52188,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-4.avif": {
+   "sha256": "1ca18f6fe879a3fd087e0cf3686cd796f78c4faab2c849f69b9754b6ff5eaef3",
+   "bytes": 41203,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-4-640.avif": {
+   "sha256": "19a93391eada75a300c158725d08455478f7c381a4f62c26004b4a4ff2233816",
+   "bytes": 19586,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-5.webp": {
+   "sha256": "8732cbdcc499a70ed45b0304ac4b409112c4be527f55d84fe283cd860802a99a",
+   "bytes": 43478,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-5.avif": {
+   "sha256": "fd9ef26444dc67d952494cba543468f57b1d17fb070eeb1189135fd56e763b6d",
+   "bytes": 32554,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-5-640.avif": {
+   "sha256": "662d9dd6ac960939be7b58f585cade1e861188d6d8db9f18ab5827c8f032b684",
+   "bytes": 15886,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-6.webp": {
+   "sha256": "e36716464ed0824e2562205c58e10cd7d16cff97e404eaeb73f65b85918db3a6",
+   "bytes": 39898,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-6.avif": {
+   "sha256": "b915460673805cae42ee032fdf38b1ae52a9bad0493e837676bce3a455c78d31",
+   "bytes": 30219,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  },
+  "posteres/poster-6-640.avif": {
+   "sha256": "91c49c8877de1b301fd5c045f1c918fc39fa5c1d8e49e1245153d8a77fdb94d6",
+   "bytes": 15249,
+   "origem": {
+    "gerado_por": "tools/ecorche-secao/posteres.py"
+   }
+  }
+ },
+ "creditos": "Músculos de fora: Diego Luján García (CC BY 4.0). Olhos: DEGUIDER (CC BY 4.0). Anatomia de dentro derivada de Z-Anatomy e BodyParts3D (CC BY-SA 4.0), com ossos e ligamentos do Open3DModel (Open3D project, G. J. R. Maat, E. Lee, LUMC et al., CC BY-SA 4.0). Dentes, gengiva e mandíbula: Human Reference Atlas (NIH, CC BY 4.0). Texturas do osso: ambientCG (CC0). Luz de estúdio: Poly Haven (CC0).",
+ "posteres_do_piloto": {
+  "poster-0-480.avif": "40af9c809f6b2535985c360bca6fab1ab9585ef3b5d5a96ab59fdbff01d78ef4",
+  "poster-0.avif": "cbd4c76aa5904c4dc954ab3ab058c5a657b8eb6be33ce546812be0c9609bb64a",
+  "poster-0.webp": "cb05eb021906e91b4db78261309feba52b729de63026c05914890426308fecde",
+  "poster-1-480.avif": "5800b02c1e5995335a691bce237805ffca703c982e364e4bab0cfc2d4c353feb",
+  "poster-1.avif": "d168a14df39dc2865feb7a1a712b7383ebbd401d5afa77fa18556c175a0c62bc",
+  "poster-1.webp": "bc98b5b8b7221c212bdd2024cb71398f4eaa95cc83ac4090a4b2a5ca61204115",
+  "poster-2-480.avif": "20b3d13611f371a9f733cc8af506ea211482d15854b774838337cef0984152de",
+  "poster-2.avif": "7e819846cfce589026c43c31e7505a8bc9fd3f95762caaf4c8539050606cb6a8",
+  "poster-2.webp": "e6b336150a51678e3cb9765e4bde59039019bed8a660ce8bcd556dd4d42b9697",
+  "poster-3-480.avif": "659aadf738bab3ed81309875652f3d228b2ca5081a0f26855e704dcdf0d10977",
+  "poster-3.avif": "f62102a5f839a94dc024b5e2bf423bf10c41982ffe9ef3d1d510294ebfd76b8c",
+  "poster-3.webp": "97231f8a60f66b7e45aa3ed17bc627217a6b163911553553571b11ae6b56b10b",
+  "poster-4-480.avif": "59d63982ac3b3eea84e334d64b92e80d13638fe09d115f13802ab2e08d662092",
+  "poster-4.avif": "84d740cbdf611460e7159ed91fb257f3b55797957560cb8f554786f1adf2541a",
+  "poster-4.webp": "1d4543428ef99d442fd2cac82fbf5b0d9ee80e6bac5a2a8eb4fa9d03ef66061f",
+  "poster-5-480.avif": "e22106d87f0136287d4f858552f8229742663e3a64e2e0b403231adfef8c9fdb",
+  "poster-5.avif": "cc737cb5987bfac488b7ca6a9a54491fffbe96f589061fa73169c7c3c79baeb4",
+  "poster-5.webp": "e908067d45ce3edb48cc2ed26732a7727732a90621f6e36c09f59d5b7cd60e5f",
+  "poster-6-480.avif": "720793ea2707c2fc5f31a6d0a054c3d59610134cc601575a26770e8b56db766f",
+  "poster-6.avif": "011b200e440d3ffd9b0ee7f26850d28f5b583a854931f206e6e9358b805992ee",
+  "poster-6.webp": "a391b451c860f342c8855d1ffb69d0044223d834154260eb67f9581ce3094de7"
+ }
+}

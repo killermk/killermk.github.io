@@ -24,7 +24,8 @@
   "compilar sem travar a página (aquecimento assíncrono com compileAsync)",
   "um desenho por material (as peças num lote por material, BatchedMesh)",
   "o quadro sem trabalho repetido (realce numa passada, fantasma com verso e frente num desenho, sem rótulos no modo seção, matrizes paradas)",
-  "montar sem tarefa longa (o aquecimento cede o fio à página entre a preparação, a compilação e o desenho de cada região)"
+  "montar sem tarefa longa (o aquecimento cede o fio à página entre a preparação, a compilação e o desenho de cada região)",
+  "só as texturas que a página ou um modelo cita (F-10, 14/10)"
  ],
  "posteres": [
   {
@@ -183,14 +184,6 @@
     "sha256": "7801d218770e3edafe24b92291f62b8f019242166e8aeb58412e88be4aa6b989"
    }
   },
-  "tex/Ivory001A-normal.jpg": {
-   "sha256": "8d14ae3cb36fe208702a9b0d06037d001aa8d5ae75c66909792e67f38011f963",
-   "bytes": 19177,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Ivory001A-normal.jpg",
-    "sha256": "8d14ae3cb36fe208702a9b0d06037d001aa8d5ae75c66909792e67f38011f963"
-   }
-  },
   "tex/Ivory001A-rugosidade.jpg": {
    "sha256": "963d8b77a57b3ccc06d545d0189cfc61cd1c4f240b7b6310af6d6f47666354a3",
    "bytes": 64259,
@@ -205,14 +198,6 @@
    "origem": {
     "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Ivory002A-cor.jpg",
     "sha256": "c0895e57e25081d4c115533078e51c82942b049d231e5b53eb89c29cce8c3c6a"
-   }
-  },
-  "tex/Ivory002A-normal.jpg": {
-   "sha256": "32094e0671b1779c48322748d3d9bb87e92a41ecda3069f04cd350b604e9a03b",
-   "bytes": 18963,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Ivory002A-normal.jpg",
-    "sha256": "32094e0671b1779c48322748d3d9bb87e92a41ecda3069f04cd350b604e9a03b"
    }
   },
   "tex/Ivory002A-rugosidade.jpg": {
@@ -231,60 +216,12 @@
     "sha256": "b123f801764d316c9f56adc5c2be27ec617c2ffc4ac3a9e8db2f498b810c6527"
    }
   },
-  "tex/Sponge001-normal.jpg": {
-   "sha256": "5fb4f568443aa1c5ac3e707c136ba083da597edb862abecd99aff374bc4c0f95",
-   "bytes": 651925,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Sponge001-normal.jpg",
-    "sha256": "5fb4f568443aa1c5ac3e707c136ba083da597edb862abecd99aff374bc4c0f95"
-   }
-  },
-  "tex/Sponge001-rugosidade.jpg": {
-   "sha256": "25b7dfbb80ec9308a58cb47d1d9d1841686f9caf754b9e38e6784b44e266ebb0",
-   "bytes": 160185,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/Sponge001-rugosidade.jpg",
-    "sha256": "25b7dfbb80ec9308a58cb47d1d9d1841686f9caf754b9e38e6784b44e266ebb0"
-   }
-  },
   "tex/studio_small_08_1k.hdr": {
    "sha256": "f6a989f89432eb4eee3191364a9c1ceed195c4ec3544173a3c04fd96cb91d0ba",
    "bytes": 1508872,
    "origem": {
     "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex/studio_small_08_1k.hdr.json",
     "sha256": "737c2b5cd6f5caef638601a5cbac57705c8a4bcd456b4d061b3d842e8f868f53"
-   }
-  },
-  "tex-principal/lujan-m00-cor.jpg": {
-   "sha256": "dc3645dc0334556c48368290277ee8c5213c3013f863192c007c8c64e0e28e03",
-   "bytes": 137755,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m00-cor.jpg",
-    "sha256": "dc3645dc0334556c48368290277ee8c5213c3013f863192c007c8c64e0e28e03"
-   }
-  },
-  "tex-principal/lujan-m00-relevo.jpg": {
-   "sha256": "312c85c4629ebc45104de5765e15ea1bf42b7a026c7e2dd0181c3eb914bd0186",
-   "bytes": 111396,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m00-relevo.jpg",
-    "sha256": "312c85c4629ebc45104de5765e15ea1bf42b7a026c7e2dd0181c3eb914bd0186"
-   }
-  },
-  "tex-principal/lujan-m05-cor.jpg": {
-   "sha256": "058e03a329df10646143e3d75c487d42f495c6d0b9d20bef657c916258a2dc77",
-   "bytes": 129129,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m05-cor.jpg",
-    "sha256": "058e03a329df10646143e3d75c487d42f495c6d0b9d20bef657c916258a2dc77"
-   }
-  },
-  "tex-principal/lujan-m05-relevo.jpg": {
-   "sha256": "79ce0a61814f816adba6641a48b3ffaa7695f2a7e2b5f214bf0fa8b786c3e43e",
-   "bytes": 94871,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m05-relevo.jpg",
-    "sha256": "79ce0a61814f816adba6641a48b3ffaa7695f2a7e2b5f214bf0fa8b786c3e43e"
    }
   },
   "tex-principal/lujan-m07-cor.jpg": {
@@ -317,38 +254,6 @@
    "origem": {
     "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m09-relevo.jpg",
     "sha256": "f0d711459d6df7755beec780fe2bd180eda33bc1fe5e03a284492bd387096fde"
-   }
-  },
-  "tex-principal/lujan-m10-cor.jpg": {
-   "sha256": "6e87d8227fa4cb4ec995dd495b2aa4d9421ff704e48f1090970fa26b2d7a1dbb",
-   "bytes": 162089,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m10-cor.jpg",
-    "sha256": "6e87d8227fa4cb4ec995dd495b2aa4d9421ff704e48f1090970fa26b2d7a1dbb"
-   }
-  },
-  "tex-principal/lujan-m10-relevo.jpg": {
-   "sha256": "b837eea8cd03348707318e7f0e69f3f5d3614058b29c21e7cdc973b9ef8d91cf",
-   "bytes": 105527,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m10-relevo.jpg",
-    "sha256": "b837eea8cd03348707318e7f0e69f3f5d3614058b29c21e7cdc973b9ef8d91cf"
-   }
-  },
-  "tex-principal/lujan-m14-cor.jpg": {
-   "sha256": "478f1324577d65051495ad7db784f42676ac221d662cd122bd50ff12a5ff08b6",
-   "bytes": 131512,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m14-cor.jpg",
-    "sha256": "478f1324577d65051495ad7db784f42676ac221d662cd122bd50ff12a5ff08b6"
-   }
-  },
-  "tex-principal/lujan-m14-relevo.jpg": {
-   "sha256": "3f5c40489752a97f95f2fa9302eee95b3188a3abd84211fe8e78e224c0324d10",
-   "bytes": 119968,
-   "origem": {
-    "arquivo": "piloto/replica-servicos/secao/ecorche-secao/tex-principal/lujan-m14-relevo.jpg",
-    "sha256": "3f5c40489752a97f95f2fa9302eee95b3188a3abd84211fe8e78e224c0324d10"
    }
   },
   "tex-principal/olho-deguider-relevo.jpg": {
